@@ -1,5 +1,3 @@
-input = '1++6*3^44 1.23'
-
 # add any keywords - umm, I don't know what language we are translating, so I'll just
 # pick a few random ones for now...
 keywords = [
@@ -14,10 +12,21 @@ keywords = [
 'for'
 ]
 
+# other 'keywords'
 boolean_constants = ['true','false']
 logical_operators = ['and','or','not']
 trig_operators = ['sin','cos','tan']
 
+'''
+note: 
+as seen in scanner(),
+there are additional keywords that are recognized/set such as:
+relation_op, arithmatic_op, etc...
+'''
+
+# an entry is added for each new ID (new Var)
+symbol_table = {}
+	
 # calls scanner function for each line in file named 'x'
 def scan_file(x):
 	file_output = []
@@ -42,6 +51,9 @@ def scanner(x):
 	success = True
 
 	while(True):
+
+		print CharType(x[i]),i
+
 		count_loops += 1
 
 		#we got all the way through the string, break!
@@ -57,9 +69,12 @@ def scanner(x):
 		if CharType(x[i]) == 'skippable':
 			i += 1
 
-		#brackets, parens...
-		if CharType(x[i]) == 'bracket':
-			output.append(("bracket",x[i]))
+		#brackets
+		if CharType(x[i]) in ['bracket-l','bracket-r']:
+			if CharType(x[i]) == 'bracket-l':
+				output.append(("bracket-l",x[i]))
+			else:
+				output.append(("bracket-r",x[i]))
 			i += 1
 
 		#assignment op :=
@@ -126,6 +141,8 @@ def scanner(x):
 				output.append(('trig_op',tempVal))
 			else:
 				output.append(('ID',tempVal))
+				symbol_table[tempVal] = 'NULL'
+	
 
 		#numbers
 		if CharType(x[i]) in ['digit','period']:
@@ -134,10 +151,12 @@ def scanner(x):
 			if CharType(x[i]) == 'period':
 				tempVal = x[i]
 				i += 1
-				while (CharType(x[i]) == 'digit') and (i < len(x)-1):
-					i += 1
+				while (CharType(x[i]) in ['digit','period']) and (i < len(x)-1):
+					if CharType(x[i]) == 'period':
+						return (output, False)
 					tempVal += x[i]
-				tempVal = tempVal[:-1] #step back one char
+					i += 1
+				#tempVal = tempVal[:-1] #step back one char
 				output.append(('real_number',tempVal))
 
 			#real x.xx & int
@@ -165,14 +184,12 @@ def scanner(x):
 			output.append(('exponent_op','^'))
 			i += 1
 
-
-    
 	return (output, success)
 
-
+# what kind of characters do we accept?
 def CharType(x):
 	if ord(x) >= 65 and ord(x) <= 122:
-		if ord(x) != 94:
+		if ord(x) not in [91,93,94]:
 			return 'alphabet'
 	if ord(x) >= 48 and ord(x) <= 57:
 		return 'digit'
@@ -180,8 +197,10 @@ def CharType(x):
 		return 'period'
 	if ord(x) in [43,45,42,47,37]: # + - * / %
 		return 'arithmatic'
-	if ord(x) in [40,41,91,93,123,125]:
-		return 'bracket' # ( ) [ ] { }
+	if ord(x) in [91]:
+		return 'bracket-l' # [
+	if ord(x) in [93]:
+		return 'bracket-r' # ]
 	if ord(x) in [10,32]:
 		return 'skippable' # space and newline
 	if ord(x) == 95:

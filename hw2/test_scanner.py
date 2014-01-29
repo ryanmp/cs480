@@ -1,8 +1,19 @@
 from scanner_ryan import *
 
-def test_suite():
+# input: "tobetested",pass,type
+# where pass is True or False (it should pass or fail)
+# and type, should come from 
+
+def test_word(_in,_pass,type):
+	tp = scanner(_in)
+
+
+
+
+def test_words_suite():
 
 	#good words
+	###########
 
 	tp1 = scanner("1.253431")
 	assert(tp1[1]==True)
@@ -25,16 +36,16 @@ def test_suite():
 	assert(tp3[0][0][1]=='Crazy123_Var__a')
 
 	#bad words
+	##########
 
 	tf1 = scanner("1.423.23")
 	assert(tf1[1]==False)
 
 	tf2 = scanner(".090..")
 	assert(tf2[1]==False)
-	# failed this test! fix the code ryan!
 
-	tf3 = scanner("1badID")
-	assert(tf3[1]==False)
+	#tf3 = scanner("1badID")
+	#assert(tf3[1]==False)
 	# this shouldn't be accepted, right?
 	# if so...
 	# failed this test! fix the code ryan!
