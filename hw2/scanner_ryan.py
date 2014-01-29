@@ -41,7 +41,6 @@ def scan_file(x):
  # on return:
  #	([list of tokens],successful tokenization?)
 def scanner(x):
-	#print x
 	x += ' '
 	x = list(x)
 	output = []
@@ -51,9 +50,6 @@ def scanner(x):
 	success = True
 
 	while(True):
-
-		print CharType(x[i]),i
-
 		count_loops += 1
 
 		#we got all the way through the string, break!

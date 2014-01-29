@@ -4,50 +4,26 @@ from scanner_ryan import *
 # where pass is True or False (it should pass or fail)
 # and type, should come from 
 
-def test_word(_in,_pass,type):
-	tp = scanner(_in)
+def test_word(_in,_pass,_type):
+	t = scanner(_in)
+	assert(t[1]==_pass)
+	#additional checks if passed=true
+	if (_pass):
+		assert(t[0][0][0]==_type)
+		assert(t[0][0][1]==_in)
 
-
-
-
-def test_words_suite():
+def test_all():
 
 	#good words
-	###########
-
-	tp1 = scanner("1.253431")
-	assert(tp1[1]==True)
-	assert(tp1[0][0][0]=='real_number')
-	assert(tp1[0][0][1]=='1.253431')
-
-	tp2 = scanner("200")
-	assert(tp2[1]==True)
-	assert(tp2[0][0][0]=='int_number')
-	assert(tp2[0][0][1]=='200')
-
-	tp2 = scanner("200")
-	assert(tp2[1]==True)
-	assert(tp2[0][0][0]=='int_number')
-	assert(tp2[0][0][1]=='200')
-
-	tp3 = scanner("Crazy123_Var__a")
-	assert(tp3[1]==True)
-	assert(tp3[0][0][0]=='ID')
-	assert(tp3[0][0][1]=='Crazy123_Var__a')
+	test_word('1.253431',True,'real_number')
+	test_word('113535',True,'int_number')
+	test_word('Crazy123_Var__a',True,'ID')
 
 	#bad words
-	##########
+	test_word('1.423.23',False,'')
+	test_word('.090..',False,'')
 
-	tf1 = scanner("1.423.23")
-	assert(tf1[1]==False)
-
-	tf2 = scanner(".090..")
-	assert(tf2[1]==False)
-
-	#tf3 = scanner("1badID")
-	#assert(tf3[1]==False)
-	# this shouldn't be accepted, right?
-	# if so...
-	# failed this test! fix the code ryan!
+	# what about 1AtestGoodOrBadVar ? not a valid id, but should it parse
+	# as a int_number and then an ID
 
 	print "passed all tests"
