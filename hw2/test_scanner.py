@@ -13,9 +13,19 @@ def test_word(_in,_pass,_type):
 		assert(t[0][0][1]==_in)
 	return t # just in case we need it
 
+def test_sentence(_in):
+	# to be finished... this might be a bit simpler than test_word,
+	# maybe just a call to: scanner(whole sentence)
+	t = scanner(_in)
+	assert(t[1]) 
+	return t
 
 def test_all():
+	test_list_of_words()
+	test_list_of_sentences()
+	print "passed all tests"
 
+def test_list_of_words():
 	#good words
 	test_word('1.253431',True,'real_number')
 	test_word('113535',True,'int_number')
@@ -68,4 +78,12 @@ def test_all():
 	# what about 1AtestGoodOrBadVar ? not a valid id, but should it parse
 	# as a int_number and then an ID
 
-	print "passed all tests"
+#any sentence made of valid words should pass,
+#we will call these, 'good sentences'
+def test_list_of_sentences():
+	#good sentences
+	test_sentence('ok + 1 + 3')
+
+
+
+
