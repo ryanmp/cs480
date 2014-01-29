@@ -18,11 +18,21 @@ boolean_constants = ['true','false']
 logical_operators = ['and','or','not']
 trig_operators = ['sin','cos','tan']
 
+# calls scanner function for each line in file named 'x'
+def scan_file(x):
+	file_output = []
+	f = open(x)
+	lines_raw = f.readlines()
+	for i in range(0,len(lines_raw)):
+		file_output.append(scanner(lines_raw[i]))
+
+	return file_output
+
  # x: input string
  # on return:
  #	([list of tokens],successful tokenization?)
 def scanner(x):
-	print x
+	#print x
 	x += ' '
 	x = list(x)
 	output = []
