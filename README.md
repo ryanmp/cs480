@@ -1,8 +1,7 @@
-cs480 Term Project
-==================
+#CS480 Term Project
 
-#Winter 2014 @ OSU
+####Winter 2014 @ OSU
 
-#Authors: Ryan & Greg
+####Authors: Ryan & Greg
 
 This term we will be writing a compiler/translator from ____ to Gforth.
