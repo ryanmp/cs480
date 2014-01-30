@@ -31,6 +31,9 @@ stutest.out:
 #	-compiler stutest2.in > stutest2.out
 #	cat stutest2.out
 
+test:
+	python test_driver.py > test_driver.out
+
 proftest.out: compiler
 	cat $(PROFTEST)
 	compiler $(PROFTEST) > proftest.out

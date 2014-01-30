@@ -4,6 +4,7 @@ keywords = [
 'bool',
 'let',
 'real',
+'int',
 'string',
 'stdout',
 'if',
@@ -61,6 +62,10 @@ def scanner(x):
 			success = False
 			break
 
+		#check beginning of comment line
+		if x[i+1] == '/' and x[i+2] == '/':
+			break
+			
 		#skip spaces and newlines
 		if CharType(x[i]) == 'skippable':
 			i += 1
@@ -169,7 +174,8 @@ def scanner(x):
 				if (isReal == 0): output.append(('int_number',tempVal))
 				elif (isReal == 1): output.append(('real_number',tempVal))
 				else: return (output, False)
-
+ 
+            
 		#arithmatic op
 		if CharType(x[i]) == 'arithmatic':
 			output.append(('arithmatic_op',x[i]))
@@ -180,6 +186,7 @@ def scanner(x):
 			output.append(('exponent_op','^'))
 			i += 1
 
+        
 	return (output, success)
 
 # what kind of characters do we accept?
@@ -197,7 +204,7 @@ def CharType(x):
 		return 'bracket-l' # [
 	if ord(x) in [93]:
 		return 'bracket-r' # ]
-	if ord(x) in [10,32]:
+	if ord(x) in [10,32,13]:
 		return 'skippable' # space and newline
 	if ord(x) == 95:
 		return 'underscore'

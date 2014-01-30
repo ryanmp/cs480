@@ -26,7 +26,7 @@ def test_sentence(_in,_pass):
 def test_all():
 	test_list_of_words()
 	test_list_of_sentences()
-	print "passed all tests"
+	return "passed all tests"
 
 def test_list_of_words():
 	#good words
