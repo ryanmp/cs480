@@ -148,7 +148,21 @@ class TestInvalidTokens(unittest.TestCase):
         expected_output = [('int_number', '2'), ('ID', 'varName')]
         actual_output = scanner(_input)
         self.assertEqual(expected_output, actual_output[0])
-        
+
+class TestScientificNotation(unittest.TestCase):
+    def test_12_test_positive_exponent(self):
+        _input = "1.0e3 1.123e123"
+        expected_output = [('real_number', '1.0e3'),
+                           ('real_number', '1.123e123')]
+        actual_output = scanner(_input)
+        self.assertEqual(expected_output, actual_output[0])
+    
+    def test_13_test_invalid_exponent(self):
+        _input = "1.0e 1"
+        expected_output = []
+        actual_output = scanner(_input)
+        self.assertEqual(expected_output, actual_output[0])
+    
 if __name__ == '__main__':
     
     #suite = unittest.TestLoader().loadTestsFromTestCase(TestScanner)
