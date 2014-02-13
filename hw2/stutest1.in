@@ -1,18 +1,1 @@
-// this is a comment line
-fileName variableName_test variable_name_test1 variablenametest2
-1234
-1234.5
-+ - * / % ^
->= <= = !=
-:=
-sin cos tan
-bool int real string if while let
-[:= 3]
-[:= 12.4]
 [+ 2 3]
-[- 2 3]
-[[a int][b real]]
-[sin x]
-[+ 1 [* 2 3]]
-[stdout "hello world"]
-[if 1>2 true]
