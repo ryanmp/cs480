@@ -97,16 +97,20 @@ def constants(x,d):
 	if ret != None: return 'constants->floats,' + ret
 
 def strings(x,d):
-	if x[0][0] == 'string': return 'strings->STRINGS'
+	if (len(x) == 1):
+		if x[0][0] == 'string': return 'strings->STRINGS'
 
 def name(x,d):
-	if x[0][0] == 'ID': return 'name->NAME,'
+	if (len(x) == 1):
+		if x[0][0] == 'ID': return 'name->NAME,'
 
 def ints(x,d):
-	if x[0][0] == 'int_number': return 'ints->INTS,'
+	if (len(x) == 1):
+		if x[0][0] == 'int_number': return 'ints->INTS,'
 
 def floats(x,d):
-	if x[0][0] == 'real_number': return 'floats->FLOATS'
+	if (len(x) == 1):
+		if x[0][0] == 'real_number': return 'floats->FLOATS'
 
 def stmts(x,d):
 	ret = ifstmts(x,d)
@@ -129,28 +133,30 @@ def printstmts(x,d):
 				if ret != None: return 'printstmts->[stdout oper],' + ret
 
 def ifstmts(x,d):
-	if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
-		if (x[1][0] == 'keyword' and x[1][1] == 'if'):
-			if (len(x) == 6):
-				ret1 = expr([x[2]],d)
-				ret2 = expr([x[3]],d)
-				ret3 = expr([x[4]],d)
-				if (ret1 != None and ret2 != None and ret3 != None):
-					return 'ifstmts->[if expr expr expr],' + ret1 + ret2 + ret3
+	if len(x) >= 5:
+		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			if (x[1][0] == 'keyword' and x[1][1] == 'if'):
+				if (len(x) == 6):
+					ret1 = expr([x[2]],d)
+					ret2 = expr([x[3]],d)
+					ret3 = expr([x[4]],d)
+					if (ret1 != None and ret2 != None and ret3 != None):
+						return 'ifstmts->[if expr expr expr],' + ret1 + ret2 + ret3
 
-			if (len(x) == 5):
-				ret1 = expr([x[2]],d)
-				ret2 = expr([x[3]],d)
-				if (ret1 != None and ret2 != None):
-					return 'ifstmts->[if expr expr],' + ret1 + ret2
+				if (len(x) == 5):
+					ret1 = expr([x[2]],d)
+					ret2 = expr([x[3]],d)
+					if (ret1 != None and ret2 != None):
+						return 'ifstmts->[if expr expr],' + ret1 + ret2
 
 def whilestmts(x,d):
-	if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
-		if (x[1][0] == 'keyword' and x[1][1] == 'while'):
-			ret1 = expr([x[2]],d)
-			ret2 = exprlist(x[2:],d)
-			if (ret1 != None and ret2 != None):
-				return 'whilestmts->[while expr exprlist],' + ret1 + ret2
+	if len(x) >= 3:
+		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			if (x[1][0] == 'keyword' and x[1][1] == 'while'):
+				ret1 = expr([x[2]],d)
+				ret2 = exprlist(x[2:],d)
+				if (ret1 != None and ret2 != None):
+					return 'whilestmts->[while expr exprlist],' + ret1 + ret2
 
 def exprlist(x,d):
 	ret1 = expr(x,d)
@@ -240,6 +246,7 @@ def tests():
 		'[[+ 1 x][+ 1 1]]',
 		'[[][]]',
 		'[[][][]]',
+		'[[ := x [+ 1 1] ]]'
 
 		]
 
@@ -252,7 +259,8 @@ def tests():
 	# should all be no
 	ts = [
 		"[[if x y z w]]",
-		"[]"
+		"[]",
+		'[[+ 1 1 1]]'
 
 		]
 
