@@ -246,7 +246,10 @@ def tests():
 		'[[+ 1 x][+ 1 1]]',
 		'[[][]]',
 		'[[][][]]',
-		'[[ := x [+ 1 1] ]]'
+		'[[ := x [+ 1 1] ]]',
+
+		'[[+ 1 [* [+ 2 3] 7]]]' # e.g. from class website
+		
 
 		]
 
@@ -260,8 +263,9 @@ def tests():
 	ts = [
 		"[[if x y z w]]",
 		"[]",
-		'[[+ 1 1 1]]'
-
+		'[[+ 1 1 1]]',
+		"[][]",
+		"[1  x  [1 5]]" # e.g. from class website
 		]
 
 	print ''
@@ -274,7 +278,7 @@ def tests():
 	# error/edge cases
 	# for finding bugs
 	ts = [
-
+		'[[while [= 5 x] [:= x [- x 1]]]]' # e.g. from class website
 		]
 
 	print ''
