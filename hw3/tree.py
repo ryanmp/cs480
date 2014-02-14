@@ -18,6 +18,7 @@ import sys
 
 '''
 
+'''
 def basic_foo():
 	tree = Tree()
 	tree.create_node("+","root")
@@ -49,31 +50,12 @@ def basic_foo():
 
 	print (prefix_out)
 	print (postfix_out)
+'''
 
 
-
-#rules
-# oper -> binop oper oper | constants | name
+'''
 
 
-oper = [[('binop',False), ('oper',False), ('oper',False)], [('constants',False)]]
-
-constants = [('int_number',True)]
-binop = [('arithmatic_op',True)]
-
-
-
-scanner_in = "[[+ x 5]]"
-scanner_out = scanner(scanner_in)[0]
-
-#
-#
-#
-
-parser_in = [i[0] for i in scanner_out]
-
-tree = Tree()
-idx = 0
 def T(x,t,i):
 	if (x[0] == 'bracket-l' and x[-1] == 'bracket-r'):
 		t.create_node("T","root")
@@ -85,14 +67,13 @@ def T(x,t,i):
 		i += 1
 		t.create_node("]", str(i), parent = "root")
 		
-
 def S(x,t,_par, i):
-	i += 10
+	i += 1
 	t.create_node("expr", str(i), parent = _par)
 	E(x,t,str(i), i)
 
 def E(x,t,_par, i):
-	i += 100
+	i += 1
 	t.create_node("oper", str(i), parent = _par)
 	O(x,t,str(i), i)
 
@@ -103,16 +84,14 @@ def O(x,t,_par, i):
 	t.create_node("oper", "leaf.2.1.1.4", parent = _par)
 	t.create_node("]", "leaf.2.1.1.5", parent = _par)
 
-
-run = T(parser_in,tree,idx)
-tree.show()
+'''
 
 
-
-
-
-
-
+#rules
+# oper -> binop oper oper | constants | name
+#oper = [[('binop',False), ('oper',False), ('oper',False)], [('constants',False)]]
+#constants = [('int_number',True)]
+#binop = [('arithmatic_op',True)]
 
 '''
 t1 = ['bracket-l','ID','bool_const','bracket-r']

@@ -107,7 +107,7 @@ def type(x):
 
 
 
-def parser(x,derivation):
+def parser(x):
 	scanner_out = scanner(x)[0] # just the tokens
 	parser_in = [i[0] for i in scanner_out] # just the token types
 	print T(parser_in,derivation)

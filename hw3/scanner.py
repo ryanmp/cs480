@@ -1,3 +1,5 @@
+# formally called scanner_ryan.py from hw2
+
 # add any keywords - umm, I don't know what language we are translating, so I'll just
 # pick a few random ones for now...
 keywords = [
@@ -163,15 +165,31 @@ def scanner(x):
 			#real x.xx & int
 			else:
 				isReal = 0
+				isExp = 0
 				tempVal = x[i]
 				while (CharType(x[i]) in ['digit','period']) and (i < len(x)-1):
 					if CharType(x[i]) == 'period':
 						isReal += 1
 					i += 1
 					tempVal += x[i]
-				tempVal = tempVal[:-1] #step back one char
+				
+				if (x[i] == 'e' or x[i] == 'E'):
+					i += 1
+					isExp += 1
+					
+					if CharType(x[i]) != 'digit':
+						return (output,False)
+					
+					while (CharType(x[i]) in ['digit']) and (i < len(x)-1):
+						tempVal += x[i]
+						i += 1
+				
+				if isExp == 0:		
+					tempVal = tempVal[:-1] #step back one char		
+				
 
 				if (isReal == 0): output.append(('int_number',tempVal))
+				elif (isExp == 1): output.append(('real_number', tempVal))
 				elif (isReal == 1): output.append(('real_number',tempVal))
 				else: return (output, False)
  
