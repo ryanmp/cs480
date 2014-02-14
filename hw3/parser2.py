@@ -20,30 +20,28 @@ derivation = []
 def T(x,d):
 	if (len(x) > 2):
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
-			
 			ret = S(x[1:-1],d)
 			if (ret != None): return 'T->[S],' + ret
 		
 def S(x,d):
+
 	if (len(x) == 2):
 		if (x[0][0] == 'bracket-l' and x[1][0] == 'bracket-r'):
 			return 'S->[ ]'
+
 	if (len(x) >= 2):
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
-			
 			ret = S(x[1:-1],d)
 			if (ret != None): return 'S->[S],' + ret
 
 	if (len(x) >= 2):
 		for i in range(1,len(x)-1):
-
 			ret1 = S(x[i:],d)
 			ret2 = S(x[:i],d)
 			if (ret1 != None and ret2 != None):
 				return 'S -> SS,' + ret1 + ret2
 
 	if (len(x) > 0):
-
 		ret = expr(x,d)
 		if ret != None: return 'S->expr,' + ret
 
@@ -62,15 +60,17 @@ def oper(x,d):
 
 			if x[1][0] == 'assignment_op':
 				ret1 = name([x[2]],d) 
-				ret2 = oper([x[3]],d)
+				ret2 = oper(x[2:-1],d)
 				if (ret1 != None and ret2 != None):
 					return 'oper->[:= name oper],' + ret1 + ret2
 
 			ret1 = binops([x[1]],d)
-			ret2 = oper([x[2]],d)
-			ret3 = oper([x[3]],d)
-			if (ret1 != None and ret2 != None and ret3 != None):
-				return 'oper->[binops oper oper],' + ret1 + ret2 + ret3
+			y = x[2:-1]
+			for i in range(1,len(y)):
+				ret2 = oper(y[i:],d)
+				ret3 = oper(y[:i],d)
+				if (ret1 != None and ret2 != None and ret3 != None):
+					return 'oper->[binops oper oper],' + ret1 + ret2 + ret3
 
 	if len(x) >= 4:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
@@ -96,6 +96,7 @@ def unops(x,d):
 		return 'unops->'+x[0][1]+','
 
 def constants(x,d):
+
 	ret = strings(x,d)
 	if ret != None: return 'constants->strings,' + ret
 
@@ -215,9 +216,9 @@ def parser(x):
 		parser_in = scanner_out[0]
 		parser_out = T(parser_in,derivation)
 		return parser_out
+
 	else:
 		print "scanner_failed" 
-
 	
 def tests():
 	
@@ -234,11 +235,15 @@ def tests():
 		"[[let [[x bool]]]]",
 		"[[let [ [x bool] [y int] ] ]]",
 		"[ [while x y] ]",
-		"[ [while x y z s] ]"
+		"[ [while x y z s] ]",
+		'[[+ 1 3]]',
+		'[[+ 1 [+ 1 1]]]',
+		'[[+ 1 [* [+ 2 3] 7]]]',
+		'[[:= x [- x 1]]]'
 
 		]
 
-
+	print ''
 	for t in ts:
 		if (parser(t) != None):
 			print t, "yes"
@@ -251,7 +256,7 @@ def tests():
 
 		]
 
-
+	print ''
 	for t in ts:
 		if (parser(t) != None):
 			print t, "yes"
