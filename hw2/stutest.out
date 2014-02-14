@@ -1,0 +1,135 @@
+scanning stutest1.in
+
+Tokens in Line 1:
+
+	 No tokens or comment line found
+
+Tokens in Line 2:
+
+	('ID', 'fileName')
+	('ID', 'variableName_test')
+	('ID', 'variable_name_test1')
+	('ID', 'variablenametest2')
+
+Tokens in Line 3:
+
+	('int_number', '1234')
+
+Tokens in Line 4:
+
+	('real_number', '1234.5')
+
+Tokens in Line 5:
+
+	('arithmatic_op', '+')
+	('arithmatic_op', '-')
+	('arithmatic_op', '*')
+	('arithmatic_op', '/')
+	('arithmatic_op', '%')
+	('exponent_op', '^')
+
+Tokens in Line 6:
+
+	('relational_op', '>=')
+	('relational_op', '<=')
+	('relational_op', 'equals')
+	('relational_op', '!=')
+
+Tokens in Line 7:
+
+	('assignment_op', '')
+
+Tokens in Line 8:
+
+	('trig_op', 'sin')
+	('trig_op', 'cos')
+	('trig_op', 'tan')
+
+Tokens in Line 9:
+
+	('keyword', 'bool')
+	('keyword', 'int')
+	('keyword', 'real')
+	('keyword', 'string')
+	('keyword', 'if')
+	('keyword', 'while')
+	('keyword', 'let')
+
+Tokens in Line 10:
+
+	('bracket-l', '[')
+	('assignment_op', '')
+	('int_number', '3')
+	('bracket-r', ']')
+
+Tokens in Line 11:
+
+	('bracket-l', '[')
+	('assignment_op', '')
+	('real_number', '12.4')
+	('bracket-r', ']')
+
+Tokens in Line 12:
+
+	('bracket-l', '[')
+	('arithmatic_op', '+')
+	('int_number', '2')
+	('int_number', '3')
+	('bracket-r', ']')
+
+Tokens in Line 13:
+
+	('bracket-l', '[')
+	('arithmatic_op', '-')
+	('int_number', '2')
+	('int_number', '3')
+	('bracket-r', ']')
+
+Tokens in Line 14:
+
+	('bracket-l', '[')
+	('bracket-l', '[')
+	('ID', 'a')
+	('keyword', 'int')
+	('bracket-r', ']')
+	('bracket-l', '[')
+	('ID', 'b')
+	('keyword', 'real')
+	('bracket-r', ']')
+	('bracket-r', ']')
+
+Tokens in Line 15:
+
+	('bracket-l', '[')
+	('trig_op', 'sin')
+	('ID', 'x')
+	('bracket-r', ']')
+
+Tokens in Line 16:
+
+	('bracket-l', '[')
+	('arithmatic_op', '+')
+	('int_number', '1')
+	('bracket-l', '[')
+	('arithmatic_op', '*')
+	('int_number', '2')
+	('int_number', '3')
+	('bracket-r', ']')
+	('bracket-r', ']')
+
+Tokens in Line 17:
+
+	('bracket-l', '[')
+	('keyword', 'stdout')
+	('string', 'hello world')
+	('bracket-r', ']')
+
+Tokens in Line 18:
+
+	('bracket-l', '[')
+	('keyword', 'if')
+	('int_number', '1')
+	('relational_op', '>')
+	('int_number', '2')
+	('bool_const', 'true')
+	('bracket-r', ']')

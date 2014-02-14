@@ -35,6 +35,6 @@ test:
 	python test_driver.py > test_driver.out
 
 proftest.out: compiler
-	cat $(PROFTEST)
-	compiler $(PROFTEST) > proftest.out
+	cat proftest.in
+	compiler proftest.in > proftest.out
 	cat proftest.out
