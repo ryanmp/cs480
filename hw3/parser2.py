@@ -1,21 +1,16 @@
-from treelib import Tree, Node
 from scanner import *
-import sys
 
-'''
-passed the following tests:
-
-"[[if x x]]"
-"[[if x y z]]"
-"[[[]]]"
-"[[stdout 5.2]]"
-"[[:= x 6]]
-"[[sin x]]"
+derivation = [] # an extra list to be used later
 
 
 '''
 
-derivation = []
+info:
+
+the next 19 functions define the grammar for IBTL
+blank lines separate production rules
+
+'''
 
 def T(x,d):
 	if (len(x) > 2):
@@ -24,7 +19,6 @@ def T(x,d):
 			if (ret != None): return 'T->[S],' + ret
 		
 def S(x,d):
-
 	if (len(x) == 2):
 		if (x[0][0] == 'bracket-l' and x[1][0] == 'bracket-r'):
 			return 'S->[ ]'
@@ -46,7 +40,6 @@ def S(x,d):
 		if ret != None: return 'S->expr,' + ret
 
 def expr(x,d): 
-
 	ret = oper(x,d)
 	if ret != None: return 'expr->oper,' + ret
 
@@ -54,7 +47,6 @@ def expr(x,d):
 	if ret != None: return 'expr->stmts,' + ret
 
 def oper(x,d):
-	
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 
@@ -90,13 +82,11 @@ def binops(x,d):
 	if x[0][0] in ['arithmatic_op','exponent_op','relational_op','log_op']:
 		return 'binops->'+x[0][1]+','
 
-
 def unops(x,d):
 	if x[0][0] in ['trig_op','log_op']:
 		return 'unops->'+x[0][1]+','
 
 def constants(x,d):
-
 	ret = strings(x,d)
 	if ret != None: return 'constants->strings,' + ret
 
@@ -119,7 +109,6 @@ def floats(x,d):
 	if x[0][0] == 'real_number': return 'floats->FLOATS'
 
 def stmts(x,d):
-
 	ret = ifstmts(x,d)
 	if ret != None: return 'stmts->ifstmts,' + ret
 
@@ -189,20 +178,29 @@ def varlist(x,d):
 				ret1 = name([x[1]],d)
 				ret2 = _type([x[2]],d)
 				if (ret1 != None and ret2 != None):
-						return 'varlist->[name type],' + ret1 + ret2
+					return 'varlist->[name type],' + ret1 + ret2
 
 			if (len(x) >= 4):
 				ret1 = name([x[1]],d)
 				ret2 = _type([x[2]],d)
 				ret3 = varlist(x[4:],d)
 				if (ret1 != None and ret2 != None and ret3 != None):
-						return 'varlist->[name type] varlist,' + ret1 + ret2 + ret3
+					return 'varlist->[name type] varlist,' + ret1 + ret2 + ret3
 
 def _type(x,d):
 	if x[0][0] == 'keyword':
 		if x[0][1] in ['bool','int','real', 'string']:
 			return 'type->'+x[0][1]+','
 
+'''
+
+end of grammar... 
+
+'''
+
+
+
+# scans and then parses x, uncomment lines for verbose
 def parser(x):
 	#print "scanning the following:"
 	#print x, '\n'
@@ -221,7 +219,6 @@ def parser(x):
 		print "scanner_failed" 
 	
 def tests():
-	
 	print "are any of the following in the grammar?"
 
 	# should all be yes
@@ -261,5 +258,7 @@ def tests():
 		if (parser(t) != None):
 			print t, "yes"
 		else: print t, "no"
+
+tests()
 
 
