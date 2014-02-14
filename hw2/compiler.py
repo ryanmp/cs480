@@ -1,9 +1,4 @@
-'''
-Created on Jan 29, 2014
-
-@author: luisramg
-'''
-from scanner_ryan import *
+from parser import *
 import sys
 
 if __name__ == '__main__':
@@ -13,15 +8,7 @@ if __name__ == '__main__':
         sys.exit(2)
     
     input_file = sys.argv[1]
-    print "scanning " + str(input_file)
-    tokens = scan_file(input_file)
-    i = 0
-    for token_line in tokens:
-    	i+=1
-    	print "\nTokens in Line " + str(i) + ":\n"
-    	if len(token_line[0])==0:
-    		print '\t No tokens or comment line found'
-    		
-    	for token in token_line[0]:
-    		print '\t' + str(token)
-    		
+    print "parsing " + str(input_file)
+    parse_tree = parse_file(input_file)
+    print parse_tree
+    

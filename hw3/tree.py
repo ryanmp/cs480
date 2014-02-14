@@ -3,6 +3,8 @@ from treelib import Tree, Node
 
 from scanner import *
 
+import sys
+
 # let's put this in our tree: 1 * 2 + 5 / 2
 
 '''
@@ -54,15 +56,105 @@ def basic_foo():
 # oper -> binop oper oper | constants | name
 
 
-
 oper = [[('binop',False), ('oper',False), ('oper',False)], [('constants',False)]]
 
 constants = [('int_number',True)]
 binop = [('arithmatic_op',True)]
 
-tree = Tree()
 
-scanner_in = "+ 1 2"
+
+scanner_in = "[[+ x 5]]"
 scanner_out = scanner(scanner_in)[0]
+
+#
+#
+#
+
+parser_in = [i[0] for i in scanner_out]
+
+tree = Tree()
+idx = 0
+def T(x,t,i):
+	if (x[0] == 'bracket-l' and x[-1] == 'bracket-r'):
+		t.create_node("T","root")
+		i += 1
+		t.create_node("[", str(i), parent = "root")
+		i += 1
+		t.create_node("S", str(i), parent = "root")
+		S(x[1:-1],t,str(i), i)
+		i += 1
+		t.create_node("]", str(i), parent = "root")
+		
+
+def S(x,t,_par, i):
+	i += 10
+	t.create_node("expr", str(i), parent = _par)
+	E(x,t,str(i), i)
+
+def E(x,t,_par, i):
+	i += 100
+	t.create_node("oper", str(i), parent = _par)
+	O(x,t,str(i), i)
+
+def O(x,t,_par, i):
+	t.create_node("[", "leaf.2.1.1.1", parent = _par)
+	t.create_node("binops", "leaf.2.1.1.2", parent = _par)
+	t.create_node("oper", "leaf.2.1.1.3", parent = _par)
+	t.create_node("oper", "leaf.2.1.1.4", parent = _par)
+	t.create_node("]", "leaf.2.1.1.5", parent = _par)
+
+
+run = T(parser_in,tree,idx)
+tree.show()
+
+
+
+
+
+
+
+
+'''
+t1 = ['bracket-l','ID','bool_const','bracket-r']
+l = []
+def typefoo(x,l):
+
+	if x == 'bool_const':
+		l.append('bool_const')
+	elif x == 'int':
+		l.append( 'int' )
+	elif x == 'float':
+		l.append( 'float' )
+	elif x == 'string':
+		l.append( 'string')
+	else: print x,l,"ERROR1!"
+	#sys.exit()
+
+def name(x,l):
+
+	if x == 'ID':
+		l.append( 'ID' )
+	else: print x,l,"ERROR2!"
+
+
+def varlist(x, l):
+
+	if (x[0] == 'bracket-l' and x[3] == 'bracket-r'):
+		if (len(x) == 4):
+				name(x[1],l)
+				typefoo(x[2],l)
+		if (len(x) > 4):
+			name(x[0],l)
+			varlist(x[1:],l)
+
+scanner (t1, l)
+print l
+'''
+
+
+
+
+
+
 
 
