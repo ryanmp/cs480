@@ -150,19 +150,19 @@ def ifstmts(x,d):
 						return 'ifstmts->[if expr expr],' + ret1 + ret2
 
 def whilestmts(x,d):
-	if len(x) >= 3:
+	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if (x[1][0] == 'keyword' and x[1][1] == 'while'):
-				ret1 = expr([x[2]],d)
-				ret2 = exprlist(x[2:],d)
+				ret1 = expr([x[3]],d)
+				ret2 = exprlist(x[3:-1],d)
 				if (ret1 != None and ret2 != None):
 					return 'whilestmts->[while expr exprlist],' + ret1 + ret2
 
 def exprlist(x,d):
 	ret1 = expr(x,d)
-	if ret1 != None: return 'exprlist->,expr' + ret1
+	if ret1 != None: return 'exprlist->expr,' + ret1
 
-	for i in range(0,len(x)-1):
+	for i in range(0,len(x)):
 		ret1 = expr(x[i:],d)
 		ret2 = exprlist(x[:i],d)
 		if (ret1 != None and ret2 != None):
@@ -238,7 +238,7 @@ def tests():
 		"[[let [[x bool]]]]",
 		"[[let [ [x bool] [y int] ] ]]",
 		"[ [while x y] ]",
-		"[ [while x y z s] ]",
+		"[ [while x y z ] ]",
 		'[[+ 1 3]]',
 		'[[+ 1 [+ 1 1]]]',
 		'[[+ 1 [* [+ 2 3] 7]]]',
