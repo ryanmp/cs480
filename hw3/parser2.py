@@ -2,41 +2,49 @@ from treelib import Tree, Node
 from scanner import *
 import sys
 
-scanner_in = "[[+ x 5]]"
-scanner_out = scanner(scanner_in)[0] # just the tokens
-parser_in = [i[0] for i in scanner_out] # just the token types
+t1 = "[[stdout x]]"
 
-history = []
 derivation = []
 
 def T(x,d):
-	if (len(x) >= 2):
-		if (x[0] == 'bracket-l' and x[-1] == 'bracket-r'):
-			return 'T->[S],' + S(x[1:-1],d)
+	if (len(x) > 2):
+		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			
+			ret = S(x[1:-1],d)
+			if (ret != None): return 'T->[S],' + ret
 		
 def S(x,d):
 	if (len(x) == 2):
-		if (x[0] == 'bracket-l' and x[1] == 'bracket-r'):
+		if (x[0][0] == 'bracket-l' and x[1][0] == 'bracket-r'):
 			return 'S->[ ]'
 	if (len(x) >= 2):
-		if (x[0] == 'bracket-l' and x[-1] == 'bracket-r'):
-			return 'S->[S],' + S(x[1:-1],d)
+		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			
+			ret = S(x[1:-1],d)
+			if (ret != None): return 'S->[S],' + ret
+
 	if (len(x) >= 2):
 		for i in range(1,len(x)-1):
-			return 'S -> SS,' + S(x[i:],d) + S(x[:i],d)
+
+			ret1 = S(x[i:],d)
+			ret2 = S(x[:i],d)
+			if (ret1 != None and ret2 != None):
+				return 'S -> SS,' + ret1 + ret2
+
 	if (len(x) > 0):
-		return 'S->expr,' + expr(x,d)
-	print "f-word!"
+
+		ret = expr(x,d)
+		if ret != None: return 'S->expr,' + ret
+
 
 
 def expr(x,d): 
-	#d = oper(x,d)
-	#d = stmts(x,d)
+	#return 'expr->oper,' + oper(x,d)
 
-	return 'expr'
-'''
+	ret = stmts(x,d)
+	if ret != None: return 'expr->stmts,' + ret
+
 def oper(x,d):
-	history.append("<oper>")
 	#if (x[0] == 'bracket-l' and x[-1] == 'bracket-r'):
 	#	if x[1] == 'assignment_op' and x[2] == 'ID' and x[3] 
 	#		name(x[2]) 
@@ -44,44 +52,70 @@ def oper(x,d):
 	#
 	# 3 rules still need implementing
 
-	d = constants(x,d)
-	d = name(x,d)
+	#return 'oper'
+	print "here"
+	y = 1
 
+	ret = constants(x,d)
+	if ret != None: return 'oper->constants,' + ret
+
+	ret = name(x,d)
+	if ret != None: return 'oper->name,' + ret
+
+'''
 def binops(x,d):
 	history.append("<binops>")
-
+'''
 def constants(x,d):
-	history.append("<constants>")
-	d = strings(x,d)
-	d = ints(x,d)
-	d = floats(x,d)
+
+	ret = strings(x,d)
+	if ret != None: return 'constants->strings,' + ret
+
+	ret = ints(x,d)
+	if ret != None: return 'constants->ints,' + ret
+
+	ret = floats(x,d)
+	if ret != None: return 'constants->floats,' + ret
 
 def strings(x,d):
 	history.append("<strings>")
 
 def name(x,d):
-	history.append("name")
+	if x[0][0] == 'ID': return 'NAME'
 
 def ints(x,d):
-	history.append("ints")
+	if x[0][0] == 'int_number': return 'INTS'
 
 def floats(x,d):
-	history.append("floats")
+	if x[0][0] == 'real_number': return 'FLOATS'
+
 
 def stmts(x,d):
-	history.append("stmts")
-	d = ifstmts(x,d)
-	d = whilestmts(x,d)
-	d = letstmts(x,d)
-	d = printstmts(x,d)
+
+	#ret = ifstmts(x,d)
+	#if ret != None: return 'stmts -> ifstmts,' + ret
+
+	#ret = whilestmts(x,d)
+	#if ret != None: return 'stmts -> whilestmts,' + ret
+
+	#ret = letstmts(x,d)
+	#if ret != None: return 'stmts -> letstmts,' + ret
+
+	ret = printstmts(x,d)
+	if ret != None: return 'stmts->printstmts,' + ret
 
 def printstmts(x,d):
-	history.append("printstmts")
-	# to implement
+	if (len(x) >= 4):
+		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			if x[1][0] == 'keyword' and x[1][1] =='stdout':
+				ret = oper(x[2:-1],d)
+				if ret != None: return 'printstmts->[stdout oper],' + ret
 
 def ifstmts(x,d):
-	history.append("ifstmts")
-	# to implement
+	if (len(x) >= 2):
+		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			# to implement
+			print '2'
 
 def whilestmts(x,d):
 	history.append("whilestmts")
@@ -103,14 +137,24 @@ def type(x):
 	history.append("type")
 	if x in ['bool_const','int_number','real_number', 'string']:
 		d.append('x')
-'''
 
 
 
 def parser(x):
-	scanner_out = scanner(x)[0] # just the tokens
-	parser_in = [i[0] for i in scanner_out] # just the token types
-	print T(parser_in,derivation)
+	print "scanning the following:"
+	print x, '\n'
+	scanner_out = scanner(x)
+
+	print "list of tokens:"
+	print scanner_out[0], '\n'
+
+	if (scanner_out[1]):
+		print "parsing..."
+		parser_in = scanner_out[0]
+		print T(parser_in,derivation)
+	else:
+		print "didn't scan properly. exiting!"
+
 	
 
 #run = T(parser_in)
