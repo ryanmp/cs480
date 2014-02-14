@@ -52,7 +52,7 @@ def oper(x,d):
 
 			if x[1][0] == 'assignment_op':
 				ret1 = name([x[2]],d) 
-				ret2 = oper(x[2:-1],d)
+				ret2 = oper(x[3:-1],d)
 				if (ret1 != None and ret2 != None):
 					return 'oper->[:= name oper],' + ret1 + ret2
 
@@ -236,7 +236,10 @@ def tests():
 		'[[+ 1 3]]',
 		'[[+ 1 [+ 1 1]]]',
 		'[[+ 1 [* [+ 2 3] 7]]]',
-		'[[:= x [- x 1]]]'
+		'[[:= x [- x 1]]]',
+		'[[+ 1 x][+ 1 1]]',
+		'[[][]]',
+		'[[][][]]',
 
 		]
 
@@ -258,6 +261,21 @@ def tests():
 		if (parser(t) != None):
 			print t, "yes"
 		else: print t, "no"
+
+
+	# error/edge cases
+	# for finding bugs
+	ts = [
+
+		]
+
+	print ''
+	for t in ts:
+		if (parser(t) != None):
+			print t, "yes"
+		else: print t, "no"
+
+
 
 tests()
 
