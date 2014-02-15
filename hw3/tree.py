@@ -1,139 +1,103 @@
-# sudo easy_install -U treelib
-from treelib import Tree, Node
 
-from scanner import *
+# our tree class!
+class Node(object):
+    def __init__(self, data):
+        self.data = data
+        self.children = []
+        self.depth = 0
 
-import sys
+    def add_child(self, obj):
+    	obj.depth = self.depth + 1
+        self.children.append(obj)
 
-# let's put this in our tree: 1 * 2 + 5 / 2
+# umm.. not perfect, but whatev,
+def print_tree(t):
+	if (t != None):
+		if (int(t.depth) > 0):
+			print spacer2(int(t.depth-1)) + spacer(int(1)) + str(t.data)
+		else: print str(t.data)
+		if (len(t.children) > 0):
+			print spacer2(int(t.depth)) + "|"
+			for i in t.children:
+				if (i != None): 
+					print_tree(i)
+
+# needed for print_tree
+def spacer(x):
+	l = ""
+	if (x > 0):
+		l = "@"
+		for i in xrange(x):
+			l += "--"
+		return l
+	return l
+
+# needed for print_tree
+def spacer2(x):
+	l = ""
+	if (x > 0):
+		l = "|"
+		for i in xrange(x):
+			l += "  "
+		return l
+	return l
 
 '''
+
+let's put this in our tree for testing:
+
+1 * 2 + 5 / 3
 
 	 +
 	/ \
    *   /
   / \  / \
- 1	2  5  2		
+ 1	2  5  3		
 
 
 '''
 
-'''
-def basic_foo():
-	tree = Tree()
-	tree.create_node("+","root")
-	tree.create_node("*", "leaf.1", parent = "root")
-	tree.create_node("/", "leaf.2", parent = "root")
+tree = Node('+')
+l = Node('*')
+r = Node('/')
+tree.add_child(l)
+tree.add_child(r)
 
-	tree.create_node("1", "leaf.1.1", parent = "leaf.1")
-	tree.create_node("2", "leaf.1.2", parent = "leaf.1")
+ll = Node('1')
+lr = Node('2')
+l.add_child(ll)
+l.add_child(lr)
 
-	tree.create_node("5", "leaf.2.1", parent = "leaf.2")
-	tree.create_node("2", "leaf.2.2", parent = "leaf.2")
+rl = Node('5')
+rr = Node('3')
+r.add_child(rl)
+r.add_child(rr)
 
-	tree.show()
+def pre_order_trav(t):
+	out = []
+	def inner(t):
+		if (t != None):
+			out.append(t.data)
+			if (len(t.children) > 0):
+				for i in t.children:
+					if (i != None): 
+						inner(i)
+	inner(t)
+	return out
 
+def post_order_trav(t):
+	out = []
+	def inner(t):
+		if (t != None):
+			if (len(t.children) > 0):
+				for i in t.children:
+					if (i != None): 
+						inner(i)
+			out.append(t.data)
+	inner(t)
+	return out
 
-	prefix_out = []
-	for node in tree.expand_tree(mode=Tree.DEPTH, reverse=False):
-		#print tree[node].identifier
-		prefix_out.append( tree[node].tag )
-
-
-
-	postfix_out = []
-	for node in tree.expand_tree(mode=Tree.DEPTH, reverse=True):
-		# print tree[node]
-		postfix_out.append( tree[node].tag )
-	postfix_out.reverse() # i think this is right... I need to double check it though...
-
-
-	print (prefix_out)
-	print (postfix_out)
-'''
-
-
-'''
-
-
-def T(x,t,i):
-	if (x[0] == 'bracket-l' and x[-1] == 'bracket-r'):
-		t.create_node("T","root")
-		i += 1
-		t.create_node("[", str(i), parent = "root")
-		i += 1
-		t.create_node("S", str(i), parent = "root")
-		S(x[1:-1],t,str(i), i)
-		i += 1
-		t.create_node("]", str(i), parent = "root")
-		
-def S(x,t,_par, i):
-	i += 1
-	t.create_node("expr", str(i), parent = _par)
-	E(x,t,str(i), i)
-
-def E(x,t,_par, i):
-	i += 1
-	t.create_node("oper", str(i), parent = _par)
-	O(x,t,str(i), i)
-
-def O(x,t,_par, i):
-	t.create_node("[", "leaf.2.1.1.1", parent = _par)
-	t.create_node("binops", "leaf.2.1.1.2", parent = _par)
-	t.create_node("oper", "leaf.2.1.1.3", parent = _par)
-	t.create_node("oper", "leaf.2.1.1.4", parent = _par)
-	t.create_node("]", "leaf.2.1.1.5", parent = _par)
-
-'''
-
-
-#rules
-# oper -> binop oper oper | constants | name
-#oper = [[('binop',False), ('oper',False), ('oper',False)], [('constants',False)]]
-#constants = [('int_number',True)]
-#binop = [('arithmatic_op',True)]
-
-'''
-t1 = ['bracket-l','ID','bool_const','bracket-r']
-l = []
-def typefoo(x,l):
-
-	if x == 'bool_const':
-		l.append('bool_const')
-	elif x == 'int':
-		l.append( 'int' )
-	elif x == 'float':
-		l.append( 'float' )
-	elif x == 'string':
-		l.append( 'string')
-	else: print x,l,"ERROR1!"
-	#sys.exit()
-
-def name(x,l):
-
-	if x == 'ID':
-		l.append( 'ID' )
-	else: print x,l,"ERROR2!"
-
-
-def varlist(x, l):
-
-	if (x[0] == 'bracket-l' and x[3] == 'bracket-r'):
-		if (len(x) == 4):
-				name(x[1],l)
-				typefoo(x[2],l)
-		if (len(x) > 4):
-			name(x[0],l)
-			varlist(x[1:],l)
-
-scanner (t1, l)
-print l
-'''
-
-
-
-
-
-
-
-
+print "tree:"
+print_tree(tree)
+print "pre order traversal:", pre_order_trav(tree)
+print "post order traversal:", post_order_trav(tree)
