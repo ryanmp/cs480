@@ -114,7 +114,7 @@ def scanner(x):
 			i += 1
 			if CharType(x[i]) == 'quote': # it's an empty string
 				i += 1
-				output.append('string','')
+				output.append(('string',''))
 			else: # not an empty string
 				tempVal = x[i]
 				while (CharType(x[i]) != 'quote'):

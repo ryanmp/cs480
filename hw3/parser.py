@@ -1,7 +1,7 @@
 from scanner import *
 
 derivation = [] # an extra list to be used later
-
+user_options = []
 
 '''
 
@@ -204,7 +204,13 @@ end of grammar...
 
 '''
 
-
+def parse_file(file_content, uoptions):
+	for option in uoptions:
+		user_options.append(option)
+		
+	output = parser(file_content)
+	return output
+	
 
 # scans and then parses x, uncomment lines for verbose
 def parser(x):
@@ -212,8 +218,10 @@ def parser(x):
 	#print x, '\n'
 	scanner_out = scanner(x)
 
-	#print "list of tokens:"
-	#print scanner_out[0], '\n'
+	if ("-t" in user_options):
+		print "list of tokens:"
+		for token in scanner_out[0]:
+			print '\t',token
 
 	if (scanner_out[1]):
 		#print "parsing..."
@@ -222,7 +230,7 @@ def parser(x):
 		return parser_out
 
 	else:
-		print "scanner_failed" 
+		return "scanner_failed" 
 	
 def tests():
 	print "are any of the following in the grammar?"
@@ -289,6 +297,6 @@ def tests():
 
 
 
-tests()
+#tests()
 
 
