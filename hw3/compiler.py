@@ -1,7 +1,7 @@
 import sys
 import string
 from parser import *
-
+from tree import *
 files = []
 options = []    
 
@@ -50,9 +50,12 @@ if __name__ == '__main__':
         print '\n',"output "
         print "-----------------------------"
         output = parse_file(content, options)
-        
+            
         if output:
-            output = output.split(',')
-            for item in output:
-                print '\t',item
+            if '-p' in options:
+                print_tree(output)
+            if '-g' in options:
+                output = output.split(',')
+                for item in output:
+                    print '\t',item
                 

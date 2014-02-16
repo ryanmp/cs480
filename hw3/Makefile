@@ -22,11 +22,11 @@ clean:
 
 # stutest.out: compiler
 stutest.out:
-	python compiler.py stutest1.in > stutest1.out
+	python compiler.py -p stutest1.in > stutest1.out
 	cat stutest1.out
-	python compiler.py stutest2.in > stutest2.out
+	python compiler.py -p stutest2.in > stutest2.out
 	cat stutest2.out
-	python compiler.py stutest3.in > stutest3.out
+	python compiler.py -p stutest3.in > stutest3.out
 	cat stutest3.out
 
 	

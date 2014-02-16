@@ -13,7 +13,7 @@ if __name__ == '__main__':
     suite_scanner = unittest.TestLoader().loadTestsFromModule(module_scanner)
     suite_parse_tree = unittest.TestLoader().loadTestsFromModule(module_parse_tree)
     
-    print "Test Driver"
+    print "\nTest Driver"
     print "===========\n"
     
     print "Test Scanner"
