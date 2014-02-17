@@ -508,6 +508,20 @@ def parser(x):
 	else:
 		return "scanner_failed" 
 	
+
+def tests2():
+
+	ts = ['[[+ 6 5]]']
+
+	print ''
+	for t in ts:
+		out = parse_file(t, ['-p'])
+		if (out != None):
+			print_tree(out)
+		else: 
+			print "ERROR"
+
+
 def tests():
 	print "are any of the following in the grammar?"
 
