@@ -14,8 +14,44 @@ class Node(object):
         return self.children[index]   
 
     def get_first_child_at_parent(self,obj):
-        return obj.children[0]
-
+        if len(obj.children) > 0:
+            return obj.children[0]
+        else:
+            return self.children[0]
+    
+    def get_first_child_at_parent_level(self,obj,level):
+        if level == 0:
+            return self.children[0]#obj.children[0]
+        
+        else:
+            if level >= 1:
+                if len(obj.children)>0: 
+                    return obj.children[0]
+                else:
+                    return self.children[0]
+            else:
+                return self.children[0] 
+            
+#             leafs = []
+#             def _get_leaf_nodes( node):
+#                 if node is not None:
+#                     if len(node.children) == 0:# and node.depth == level:
+#                         leafs.append(node)
+#                     for n in node.children:
+#                         _get_leaf_nodes(n)
+#             _get_leaf_nodes(obj)
+#             
+#             if len(leafs) > 0:
+#                 return leafs[0]
+#             else:
+#             if level == 1:
+#                 return self.children[0]
+            #if level == 2:
+            #    return self.children[0][0]
+            
+    def get_parent_depth(self,obj):
+        return obj.depth
+    
 # umm.. not perfect, but whatev,
 def print_tree(t):
 	if (t != None):

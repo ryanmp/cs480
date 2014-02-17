@@ -28,7 +28,12 @@ stutest.out:
 	cat stutest2.out
 	python compiler.py -p stutest3.in > stutest3.out
 	cat stutest3.out
-
+	python compiler.py -p stutest4.in > stutest4.out
+	cat stutest4.out
+	python compiler.py -p stutest5.in > stutest5.out
+	cat stutest5.out
+	python compiler.py -p stutest6.in > stutest6.out
+	cat stutest6.out
 	
 test:
 	python test_driver.py > test_driver.out

@@ -23,8 +23,9 @@ def T(x,d):
 			child2 = Node(']')
 			tree.add_child(child1)
 			tree.add_child(child2)
-			parent = Node('')
-			
+			parent = child1#Node('')
+			#parent = Node('')
+			#parent = tree.get_child_at(0)
 			ret = S(x[1:-1],d,tree,parent)
 			if (ret != None):
 				if '-p' in user_options: #display tree else display grammar productions
@@ -39,7 +40,13 @@ def S(x,d,tree,parent):
 				child_1 = Node('[')
 				child_2 = Node(']')
 				# get immediate parent child
-				child1 = tree.get_child_at(0)				
+				#child1 = tree.get_child_at(0)
+				level = tree.get_parent_depth(parent)
+				if (level == 0):
+					child1 = tree.get_child_at(0)
+				else:
+					child1 = tree.get_first_child_at_parent_level(parent,level)
+							
 				child1.add_child(child_1)
 				child1.add_child(child_2)
 				return tree
@@ -48,16 +55,21 @@ def S(x,d,tree,parent):
 
 	if (len(x) >= 2):
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
-			parent = Node('')
+			#parent = Node('')
 			if '-p' in user_options: #display tree else display grammar productions
 				child_1 = Node('[')
 				child_2 = Node(']')
 				# get immediate parent child
-				child1 = tree.get_child_at(0)				
+				
+				if parent.depth > 0:
+					child1 = tree.get_first_child_at_parent(parent)
+				else:
+					child1 = tree.get_child_at(0)
+				
 				child1.add_child(child_1)
 				child1.add_child(child_2)
+				#parent = child1
 				parent = child1
-				
 			ret = S(x[1:-1],d,tree,parent)
 			if (ret != None):
 				if '-p' in user_options: #display tree else display grammar productions
@@ -70,6 +82,7 @@ def S(x,d,tree,parent):
 			ret1 = S(x[i:],d,tree,parent)
 			ret2 = S(x[:i],d,tree,parent)
 			if (ret1 != None and ret2 != None):
+				# TODO: add parse tree logic
 				return 'S -> SS,' + ret1 + ret2
 
 	if (len(x) > 0):
@@ -89,7 +102,9 @@ def expr(x,d,tree,parent):
 			return 'expr->oper,' + ret
 
 	ret = stmts(x,d)
-	if ret != None: return 'expr->stmts,' + ret
+	if ret != None:
+		# TODO: add parse tree logic 
+		return 'expr->stmts,' + ret
 
 def oper(x,d,tree,parent):
 	if len(x) >= 5:
@@ -99,6 +114,7 @@ def oper(x,d,tree,parent):
 				ret1 = name([x[2]],d) 
 				ret2 = oper(x[3:-1],d,tree,parent)
 				if (ret1 != None and ret2 != None):
+					# TODO: add parse tree logic
 					return 'oper->[:= name oper],' + ret1 + ret2
 
 			ret1 = binops([x[1]],d)
@@ -126,6 +142,7 @@ def oper(x,d,tree,parent):
 			ret1 = unops([x[1]],d)
 			ret2 = oper([x[2]],d,tree,parent)
 			if (ret1 != None and ret2 != None):
+				# TODO: add parse tree logic
 				return 'oper->[unops oper],' + ret1 + ret2
 
 	ret = constants(x,d)
@@ -152,11 +169,16 @@ def binops(x,d):
 
 def unops(x,d):
 	if x[0][0] in ['trig_op','log_op']:
+		# TODO: add parse tree logic
 		return 'unops->'+x[0][1]+','
 
 def constants(x,d):
 	ret = strings(x,d)
-	if ret != None: return 'constants->strings,' + ret
+	if ret != None:
+		if '-p' in user_options: #display tree else display grammar productions
+			return ret
+		else:  
+			return 'constants->strings,' + ret
 
 	ret = ints(x,d)
 	if ret != None:
@@ -166,10 +188,15 @@ def constants(x,d):
 			return 'constants->ints,' + ret
 
 	ret = floats(x,d)
-	if ret != None: return 'constants->floats,' + ret
+	if ret != None:
+		if '-p' in user_options: #display tree else display grammar productions
+			return ret
+		else:  
+			return 'constants->floats,' + ret
 
 def strings(x,d):
 	if (len(x) == 1):
+		# TODO: add parse tree logic
 		if x[0][0] == 'string': return 'strings->STRINGS'
 
 def name(x,d):
@@ -190,27 +217,41 @@ def ints(x,d):
 
 def floats(x,d):
 	if (len(x) == 1):
-		if x[0][0] == 'real_number': return 'floats->FLOATS'
+		if x[0][0] == 'real_number':
+			if '-p' in user_options: #display tree else display grammar productions
+				return x[0][1]
+			else:  
+				return 'floats->FLOATS'
 
 def stmts(x,d):
 	ret = ifstmts(x,d)
-	if ret != None: return 'stmts->ifstmts,' + ret
+	if ret != None:
+		# TODO: add parse tree logic 
+		return 'stmts->ifstmts,' + ret
 
 	ret = whilestmts(x,d)
-	if ret != None: return 'stmts->whilestmts,' + ret
+	if ret != None:
+		# TODO: add parse tree logic 
+		return 'stmts->whilestmts,' + ret
 
 	ret = letstmts(x,d)
-	if ret != None: return 'stmts->letstmts,' + ret
+	if ret != None:
+		# TODO: add parse tree logic 
+		return 'stmts->letstmts,' + ret
 
 	ret = printstmts(x,d)
-	if ret != None: return 'stmts->printstmts,' + ret
+	if ret != None:
+		# TODO: add parse tree logic 
+		return 'stmts->printstmts,' + ret
 
 def printstmts(x,d):
 	if (len(x) >= 4):
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if x[1][0] == 'keyword' and x[1][1] =='stdout':
 				ret = oper(x[2:-1],d)
-				if ret != None: return 'printstmts->[stdout oper],' + ret
+				if ret != None:
+					# TODO: add parse tree logic 
+					return 'printstmts->[stdout oper],' + ret
 
 def ifstmts(x,d):
 	if len(x) >= 5:
@@ -221,12 +262,14 @@ def ifstmts(x,d):
 					ret2 = expr([x[3]],d)
 					ret3 = expr([x[4]],d)
 					if (ret1 != None and ret2 != None and ret3 != None):
+						# TODO: add parse tree logic
 						return 'ifstmts->[if expr expr expr],' + ret1 + ret2 + ret3
 
 				if (len(x) == 5):
 					ret1 = expr([x[2]],d)
 					ret2 = expr([x[3]],d)
 					if (ret1 != None and ret2 != None):
+						# TODO: add parse tree logic
 						return 'ifstmts->[if expr expr],' + ret1 + ret2
 
 def whilestmts(x,d):
@@ -236,16 +279,20 @@ def whilestmts(x,d):
 				ret1 = expr([x[3]],d)
 				ret2 = exprlist(x[3:-1],d)
 				if (ret1 != None and ret2 != None):
+					# TODO: add parse tree logic
 					return 'whilestmts->[while expr exprlist],' + ret1 + ret2
 
 def exprlist(x,d):
 	ret1 = expr(x,d)
-	if ret1 != None: return 'exprlist->expr,' + ret1
+	if ret1 != None:
+		# TODO: add parse tree logic 
+		return 'exprlist->expr,' + ret1
 
 	for i in range(0,len(x)):
 		ret1 = expr(x[i:],d)
 		ret2 = exprlist(x[:i],d)
 		if (ret1 != None and ret2 != None):
+			# TODO: add parse tree logic
 			return 'exprlist->expr exprlist,' + ret1 + ret2
 
 
@@ -255,7 +302,9 @@ def letstmts(x,d):
 			if (x[1][0] == 'keyword' and x[1][1] == 'let'):
 				if (x[2][0] == 'bracket-l' and x[-2][0] == 'bracket-r'):
 					ret1 = varlist(x[3:-2],d)
-					if (ret1 != None): return 'letstmts->[let [varlist]],' + ret1
+					if (ret1 != None):
+						# TODO: add parse tree logic 
+						return 'letstmts->[let [varlist]],' + ret1
 
 def varlist(x,d):
 	if (len(x) >= 4):
@@ -264,6 +313,7 @@ def varlist(x,d):
 				ret1 = name([x[1]],d)
 				ret2 = _type([x[2]],d)
 				if (ret1 != None and ret2 != None):
+					# TODO: add parse tree logic
 					return 'varlist->[name type],' + ret1 + ret2
 
 			if (len(x) >= 4):
@@ -271,11 +321,13 @@ def varlist(x,d):
 				ret2 = _type([x[2]],d)
 				ret3 = varlist(x[4:],d)
 				if (ret1 != None and ret2 != None and ret3 != None):
+					# TODO: add parse tree logic
 					return 'varlist->[name type] varlist,' + ret1 + ret2 + ret3
 
 def _type(x,d):
 	if x[0][0] == 'keyword':
 		if x[0][1] in ['bool','int','real', 'string']:
+			# TODO: add parse tree logic
 			return 'type->'+x[0][1]+','
 
 '''
