@@ -7,8 +7,21 @@ class Node(object):
         self.depth = 0
 
     def add_child(self, obj):
-    	obj.depth = self.depth + 1
+    	#obj.depth = self.depth + 1
         self.children.append(obj)
+
+        #need to set depth recursively
+        def set_depth(t):
+            if (t != None or t != str):
+                if (len(t.children) > 0):
+                    for i in t.children:
+                        if (i != None): 
+                            i.depth = t.depth + 1
+                            set_depth(i)
+        set_depth(self)
+
+        
+
      
     def get_child_at(self, index):
         return self.children[index]   
@@ -46,6 +59,15 @@ def print_tree(t):
 			for i in t.children:
 				if (i != None): 
 					print_tree(i)
+
+
+def print_tree2(t):
+    if (t != None):
+        print str(t.depth), str(t.data)
+        if (len(t.children) > 0):
+            for i in t.children:
+                if (i != None): 
+                    print_tree2(i)
 
 # print_tree returning string version (used for testing)                  
 def get_tree_str(t,output):
@@ -113,9 +135,6 @@ rr = Node('3')
 r.add_child(rl)
 r.add_child(rr)
 
-
-
-
 def pre_order_trav(t):
 	out = []
 	def inner(t):
@@ -140,6 +159,21 @@ def post_order_trav(t):
 	inner(t)
 	return out
     
+
+
+def tt1():
+    a = Node('a')
+    b = Node('b')
+    a.add_child(b)
+    c = Node('c')
+    a.add_child(c)
+
+    root = Node('root')
+    root.add_child(a)
+
+    print_tree2(root)
+
+
 def print_test_tree_version1():
     # this version includes the grammar and 
     # parse tree for [[+ x y]]

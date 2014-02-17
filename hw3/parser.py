@@ -454,9 +454,9 @@ def varlist(x,d,tree,parent):
 						return 'varlist->[name type],' + ret1 + ret2
 
 			if (len(x) >= 4):
-				ret1 = name([x[1]],d)
-				ret2 = _type([x[2]],d)
-				ret3 = varlist(x[4:],d)
+				ret1 = name([x[1]],d,tree,parent)
+				ret2 = _type([x[2]],d,tree,parent)
+				ret3 = varlist(x[4:],d,tree,parent)
 				if (ret1 != None and ret2 != None and ret3 != None):
 					# TODO: add parse tree logic
 					return 'varlist->[name type] varlist,' + ret1 + ret2 + ret3
@@ -511,15 +511,18 @@ def parser(x):
 
 def tests2():
 
-	ts = ['[[+ 6 5]]']
+	ts = ['[[+ 6 [* 1 5]]]']
 
 	print ''
 	for t in ts:
+		out2 = parser(t)
 		out = parse_file(t, ['-p'])
 		if (out != None):
+			print "deriv:", out2
 			print_tree(out)
 		else: 
 			print "ERROR"
+	return out
 
 
 def tests():
@@ -553,8 +556,10 @@ def tests():
 
 	print ''
 	for t in ts:
-		if (parser(t) != None):
+		ret = parser(t)
+		if (ret != None):
 			print t, "yes"
+			print ret
 		else: print t, "no"
 
 	# should all be no
