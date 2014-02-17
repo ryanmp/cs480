@@ -32,23 +32,6 @@ class Node(object):
             else:
                 return self.children[0] 
             
-#             leafs = []
-#             def _get_leaf_nodes( node):
-#                 if node is not None:
-#                     if len(node.children) == 0:# and node.depth == level:
-#                         leafs.append(node)
-#                     for n in node.children:
-#                         _get_leaf_nodes(n)
-#             _get_leaf_nodes(obj)
-#             
-#             if len(leafs) > 0:
-#                 return leafs[0]
-#             else:
-#             if level == 1:
-#                 return self.children[0]
-            #if level == 2:
-            #    return self.children[0][0]
-            
     def get_parent_depth(self,obj):
         return obj.depth
     

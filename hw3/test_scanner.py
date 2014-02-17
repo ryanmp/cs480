@@ -3,7 +3,7 @@ import random
 from scanner import *
 from parser import *
   
-#@unittest.skip("skipping scanner tests for milestone 3")    
+@unittest.skip("skipping scanner tests for milestone 3")    
 class TestSpecialCases(unittest.TestCase):
     #def setUp(self):
             
@@ -102,7 +102,7 @@ class TestSpecialCases(unittest.TestCase):
         actual_tokens = scanner(_input)
         self.assertEqual(expected_tokens, actual_tokens[0])
 
-#@unittest.skip("skipping scanner tests for milestone 3")    
+@unittest.skip("skipping scanner tests for milestone 3")    
 class TestExpressions(unittest.TestCase):
     def test_unary_operators(self):
         _input = '[sin x]'
@@ -129,7 +129,7 @@ class TestExpressions(unittest.TestCase):
         actual_tokens = scanner(_input)
         self.assertEqual(expected_tokens, actual_tokens[0])
 
-#@unittest.skip("skipping scanner tests for milestone 3")            
+@unittest.skip("skipping scanner tests for milestone 3")            
 class TestInvalidTokens(unittest.TestCase):
     def test_possible_invalid_string_constants(self):
         _input = '"hello world'
@@ -143,7 +143,7 @@ class TestInvalidTokens(unittest.TestCase):
         actual_output = scanner(_input)
         self.assertEqual(expected_output, actual_output[0])
 
-#@unittest.skip("skipping scanner tests for milestone 3")    
+@unittest.skip("skipping scanner tests for milestone 3")    
 class TestScientificNotation(unittest.TestCase):
     def test_positive_exponent(self):
         _input = "1.0e3 1.123e123"

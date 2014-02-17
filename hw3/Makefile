@@ -34,6 +34,18 @@ stutest.out:
 	cat stutest5.out
 	python compiler.py -p stutest6.in > stutest6.out
 	cat stutest6.out
+	python compiler.py -p stutest7.in > stutest7.out
+	cat stutest7.out
+	python compiler.py -p stutest8.in > stutest8.out
+	cat stutest8.out
+	python compiler.py -p stutest9.in > stutest9.out
+	cat stutest9.out
+	python compiler.py -p stutest10.in > stutest10.out
+	cat stutest10.out
+	python compiler.py -p stutest11.in > stutest11.out
+	cat stutest11.out
+	python compiler.py -p stutest12.in > stutest12.out
+	cat stutest12.out
 	
 test:
 	python test_driver.py > test_driver.out
