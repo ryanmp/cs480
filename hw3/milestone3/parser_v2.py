@@ -349,7 +349,6 @@ def test(ts,show_tree,show_derivation):
 
 def tests(show_trees,show_derivations):
 	print "are any of the following in the grammar?"
-	print "========="
 
 	# should all be yes
 	ts = [
@@ -371,19 +370,13 @@ def tests(show_trees,show_derivations):
 		'[[][]]',
 		'[[][][]]',
 		'[[ := x [+ 1 1] ]]',
-		#'[[while [= 5 x] [:= x [- x 1]]]]', # e.g. from class website
+
 		'[[+ 1 [* [+ 2 3] 7]]]' # e.g. from class website
 
 
 		]
 
-<<<<<<< HEAD
-	print "should be YES:"
-	#test(ts,show_trees,show_derivations)
-	print "========="
-=======
 	test(ts,show_trees,show_derivations)
->>>>>>> b5a2e5376d27e1e7fc3d1c07a972847eb6b272b1
 
 	# should all be no
 	ts = [
@@ -391,25 +384,16 @@ def tests(show_trees,show_derivations):
 		"[]",
 		'[[+ 1 1 1]]',
 		"[][]",
-		"[1  x  [1 5]]", # e.g. from class website
-		"[[if + 5 1]]"
+		"[1  x  [1 5]]" # e.g. from class website
 		]
 
-<<<<<<< HEAD
-	print "should be NO:"
-	#test(ts,show_trees,show_derivations)
-	print "========="
-=======
 	test(ts,show_trees,show_derivations)
 
->>>>>>> b5a2e5376d27e1e7fc3d1c07a972847eb6b272b1
 
 	# error/edge cases
 	# for finding bugs
 	ts = [
-		# the order seems off on the tree for this one...
-		#'[[while [= 5 x] [:= x [- x 1]]]]',
-		'[[- 1]]' 
+		'[[while [= 5 x] [:= x [- x 1]]]]' # e.g. from class website
 		]
 
 	print ''
