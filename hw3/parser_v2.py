@@ -335,7 +335,7 @@ def test(ts,show_tree,show_derivation):
 		out = parser(t)
 		if (out != None):
 			print t, "yes"
-			if show_tree: print_tree2(out[1])
+			if show_tree: print_tree(out[1])
 			if show_derivation:
 				print "deriv:", out[0]
 		else: print t, "no"
@@ -370,7 +370,7 @@ def tests(show_trees,show_derivations):
 
 		]
 
-	#test(ts,show_trees,show_derivations)
+	test(ts,show_trees,show_derivations)
 
 	# should all be no
 	ts = [
@@ -381,7 +381,7 @@ def tests(show_trees,show_derivations):
 		"[1  x  [1 5]]" # e.g. from class website
 		]
 
-	#test(ts,show_trees,show_derivations)
+	test(ts,show_trees,show_derivations)
 
 
 	# error/edge cases
@@ -391,7 +391,7 @@ def tests(show_trees,show_derivations):
 		]
 
 	print ''
-	test(ts,show_trees,show_derivations)
+	#test(ts,show_trees,show_derivations)
 
 
 #usage: tests(show_tree?,show_derivation?)
