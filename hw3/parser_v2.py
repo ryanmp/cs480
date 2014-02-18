@@ -228,13 +228,15 @@ def whilestmts(x):
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if (x[1][0] == 'keyword' and x[1][1] == 'while'):
-				ret1 = expr([x[3]])
-				ret2 = exprlist(x[3:-1])
-				if (ret1 != None and ret2 != None):
-					new_node = Node("whilestmts->[while expr exprlist]")
-					new_node.add_child(ret1[1])
-					new_node.add_child(ret2[1])
-					return 'whilestmts->[while expr exprlist],' + ret1[0] + ret2[0], new_node
+				y = x[2:-1]
+				for i in range(0,len(y)):
+					ret1 = expr(y[i:])
+					ret2 = exprlist(y[:i])
+					if (ret1 != None and ret2 != None):
+						new_node = Node("whilestmts->[while expr exprlist]")
+						new_node.add_child(ret1[1])
+						new_node.add_child(ret2[1])
+						return 'whilestmts->[while expr exprlist],' + ret1[0] + ret2[0], new_node
 
 def exprlist(x):
 	ret1 = expr(x)
@@ -368,8 +370,7 @@ def tests(show_trees,show_derivations):
 
 		]
 
-	print ''
-	test(ts,show_trees,show_derivations)
+	#test(ts,show_trees,show_derivations)
 
 	# should all be no
 	ts = [
@@ -380,14 +381,13 @@ def tests(show_trees,show_derivations):
 		"[1  x  [1 5]]" # e.g. from class website
 		]
 
-	print ''
-	test(ts,show_trees,show_derivations)
+	#test(ts,show_trees,show_derivations)
 
 
 	# error/edge cases
 	# for finding bugs
 	ts = [
-		#'[[while [= 5 x] [:= x [- x 1]]]]' # e.g. from class website
+		'[[while [= 5 x] [:= x [- x 1]]]]' # e.g. from class website
 		]
 
 	print ''
