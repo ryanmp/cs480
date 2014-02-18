@@ -19,6 +19,7 @@ keywords = [
 boolean_constants = ['true','false']
 logical_operators = ['and','or','not']
 trig_operators = ['sin','cos','tan']
+un_op = ['-']
 
 '''
 note: 
