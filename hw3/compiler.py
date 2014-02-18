@@ -1,6 +1,7 @@
 import sys
 import string
 from parser import *
+#from parser_v2 import *
 from tree import *
 files = []
 options = []    
@@ -54,6 +55,7 @@ if __name__ == '__main__':
         if output:
             if '-p' in options:
                 print_tree(output)
+                #print_tree(output[1])
             if '-g' in options:
                 output = output.split(',')
                 for item in output:

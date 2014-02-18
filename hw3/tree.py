@@ -19,9 +19,6 @@ class Node(object):
                             i.depth = t.depth + 1
                             set_depth(i)
         set_depth(self)
-
-        
-
      
     def get_child_at(self, index):
         return self.children[index]   
