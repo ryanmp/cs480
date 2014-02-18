@@ -330,15 +330,21 @@ def parser(x):
 
 
 def test(ts,show_tree,show_derivation):
+	test_results = []
 	for t in ts:
 		if show_tree: print "-------"
 		out = parser(t)
 		if (out != None):
 			print t, "yes"
+			test_results.append("yes")
 			if show_tree: print_tree(out[1])
 			if show_derivation:
 				print "deriv:", out[0]
-		else: print t, "no"
+		else: 
+			print t, "no"
+			test_results.append("no")
+		
+	return test_results
 
 
 def tests(show_trees,show_derivations):

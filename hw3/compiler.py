@@ -9,10 +9,10 @@ options = []
 usage = """
 Usage:
     compiler [option] [files] 
-    option '-h' Display help
-    option '-t' Display tokens
-    option '-g' Display grammar
-    option '-p' Display parse tree (default)
+    option '-g' Display grammar only
+    option '-t' Display parse tree only
+    option '-b' Display both parse tree and grammar
+
 """
 
 def prepare_files(argv):
@@ -43,23 +43,30 @@ if __name__ == '__main__':
     prepare_files(sys.argv)
     
     for selected_file in files:
-        print '\n',"parsing " + str(selected_file)
+        print '\n',"input: parsing " + str(selected_file)
         print "-----------------------------"
         content = read_file(selected_file)
         print content
         
-        print '\n',"output "
+        print '\n',"output: "
         print "-----------------------------"
         output = parse_file(content, options)
             
         if output:
-        
-        
-            if '-p' in options:
+            if '-t' in options:
                 #print_tree(output)
                 print_tree(output[1])
             if '-g' in options:
                 output = output[0].split(',')
                 for item in output:
                     print '\t',item
+            if '-b' in options:
+                print "parse tree:\n"
+                print_tree(output[1])
+                print "\ngrammar derivation:\n"
+                output = output[0].split(',')
+                for item in output:
+                    print '\t',item
                 
+        else:
+            print "Error: Sintax error\n"
