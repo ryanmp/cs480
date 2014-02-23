@@ -38,8 +38,10 @@ stutest.out:
 	@echo ""
 	@echo "gforth output:"
 	cat $(TESTPATH)stutest1.fs
+	@echo ""
+	@echo ""
 	gforth $(TESTPATH)stutest1.fs
-	@echo "\n"
+	@echo ""
 test:
 	python test_driver.py > test_driver.out
 
