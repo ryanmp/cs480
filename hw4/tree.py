@@ -156,21 +156,6 @@ def post_order_trav(t):
 	inner(t)
 	return out
     
-
-
-def tt1():
-    a = Node('a')
-    b = Node('b')
-    a.add_child(b)
-    c = Node('c')
-    a.add_child(c)
-
-    root = Node('root')
-    root.add_child(a)
-
-    print_tree2(root)
-
-
 def print_test_tree_version1():
     # this version includes the grammar and 
     # parse tree for [[+ x y]]

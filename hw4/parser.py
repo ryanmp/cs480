@@ -114,7 +114,7 @@ def oper(x):
 
 def binops(x):
 	if x[0][0] in ['arithmatic_op','exponent_op','relational_op','log_op']:
-		new_node = Node(x[0][1])
+		new_node = Node(x[0])
 		return 'binops->'+x[0][1]+',', new_node
 
 def unops(x):
@@ -156,7 +156,7 @@ def name(x):
 def ints(x):
 	if (len(x) == 1):
 		if x[0][0] == 'int_number':
-			new_node = Node(x[0][1])
+			new_node = Node(x[0])
 			return 'ints->INTS,', new_node
 
 def floats(x):

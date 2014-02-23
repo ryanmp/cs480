@@ -1,6 +1,6 @@
 import sys
 import string
-from parser_v2 import *
+from parser import *
 from tree import *
 files = []
 options = []    
