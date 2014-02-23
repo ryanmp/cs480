@@ -2,6 +2,7 @@ import sys
 import string
 from parser import *
 from tree import *
+from generator import *
 files = []
 options = []    
 
@@ -11,6 +12,7 @@ Usage:
     option '-g' Display grammar only
     option '-t' Display parse tree only
     option '-b' Display both parse tree and grammar
+    option '-f' Display gforth code
 
 """
 
@@ -66,7 +68,9 @@ if __name__ == '__main__':
                 output = output[0].split(',')
                 for item in output:
                     print '\t',item
-            if '-g' in options:
+            if '-f' in options:
                 print "gforth code:\n"
+                script = generate_gforth_script(content)
+                print script
         else:
-            print "Error: Sintax error\n"
+            print "Error: Syntax error\n"

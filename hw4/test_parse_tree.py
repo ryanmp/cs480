@@ -1,7 +1,7 @@
 import unittest
 import random
 from scanner import *
-from parser_v2 import *
+from parser import *
 from tree import *
 
 class TestExpressionProduction(unittest.TestCase):    
@@ -28,25 +28,7 @@ class TestExpressionProduction(unittest.TestCase):
         '[[+ 1 [* [+ 2 3] 7]]]' # e.g. from class website
         ]
         
-        expected_output = ['yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes',
-                           'yes']
+        expected_output = ['yes']*19
         
         actual_output = test(_input,False,False)
         

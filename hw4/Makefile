@@ -34,6 +34,10 @@ clean:
 stutest.out:
 	python compiler.py -$(USEROPTIONS) $(TESTPATH)stutest1.in > stutest1.out
 	cat stutest1.out
+	@chmod 755 stutest1.out
+	@echo ""
+	@echo "gforth output:"
+	gforth stutest1.out
 	
 test:
 	python test_driver.py > test_driver.out
