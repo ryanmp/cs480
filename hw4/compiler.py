@@ -1,5 +1,7 @@
 import sys
 import string
+import os.path
+
 from parser import *
 from tree import *
 from generator import *
@@ -36,6 +38,14 @@ def read_file(input_file):
     
     return content    
 
+def write_gforth_fs(output_file_name, content):
+    new_name = os.path.splitext(output_file_name)[0]
+    new_name+='.fs'
+    myFile = open(new_name, 'w')
+    code = generate_gforth_script(content)
+    myFile.write(code)
+    myFile.close()
+    
 if __name__ == '__main__':
     if len(sys.argv) < 1:
         print usage
@@ -55,13 +65,15 @@ if __name__ == '__main__':
             
         if output:
             if '-t' in options:
-                #print_tree(output)
+                
                 print_tree(output[1])
             if '-g' in options:
+                
                 output = output[0].split(',')
                 for item in output:
                     print '\t',item
             if '-b' in options:
+                
                 print "parse tree:\n"
                 print_tree(output[1])
                 print "\ngrammar derivation:\n"
@@ -72,5 +84,7 @@ if __name__ == '__main__':
                 print "gforth code:\n"
                 script = generate_gforth_script(content)
                 print script
+                write_gforth_fs(selected_file, content)
+
         else:
             print "Error: Syntax error\n"

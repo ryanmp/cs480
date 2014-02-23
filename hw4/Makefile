@@ -28,7 +28,7 @@ compiler: $(OBJS)
 	$(CCC) $(CCFLAGS) -o compiler $(OBJS)
 
 clean:
-	rm -f *.out *.pyc
+	rm -f *.out *.pyc $(TESTPATH)*.fs
 	ls
 
 stutest.out:
@@ -37,8 +37,9 @@ stutest.out:
 	@chmod 755 stutest1.out
 	@echo ""
 	@echo "gforth output:"
-	gforth stutest1.out
-	
+	cat $(TESTPATH)stutest1.fs
+	gforth $(TESTPATH)stutest1.fs
+	@echo "\n"
 test:
 	python test_driver.py > test_driver.out
 
