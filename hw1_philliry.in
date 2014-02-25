@@ -1,0 +1,97 @@
+." (1.)" cr \
+." Hello World" cr cr
+
+." (2.)" cr \ yeah, I don't know how to do that 
+." ???"  cr cr
+
+." (3.)" cr \ assuming integer arithmetic
+\ 16 / 32 + 74 * 16 ^ 3 + 5 % 10
+16 16 * 16 * 74 * 16 32 / + 5 10 mod + . cr cr
+
+." (4.)" cr \ floating point or double?
+\ 16.0 / 32.0 + 74.0 * 16.0 ^ 3.0 + 5 % 10
+16e 16e f* 16e f* 74e f* 16e 32e f/ f+ 5e 10e fmod f+ f. cr cr
+
+." (5.)" cr \
+\ 16.0e0 / 32.0e0 + 74.0e0 * 16.0e0 ^ 3.0e0 + 5 % 10
+16.0e0 16.0e0 f* 16.0e0 f* 74.0e0 f* 16.0e0 32.0e0 f/ f+ 5 10 mod s>f f+ f. cr cr
+
+." (6.)" cr \
+\ 16 / 32.0 + 74.0 * 16 ^ 3 + 5 % 10
+16 16 * 16 * s>f 74e f* 16 s>f 32e f/ f+ 5 10 mod s>f f+ f. cr cr
+
+." (7.)" cr \
+\
+\ y = 16;
+\ x = 32.0e0;
+\ y + x - 3.0e0 * 6 / 10.0 
+\
+VARIABLE y
+16 y !
+\ y . 247496  ok   ( it doesn't have to be this address!)
+\ y @ .  16  ok
+VARIABLE x
+32.0e0 x f!
+\ x f@ f. 32.
+y @ s>f x f@ 3e 6 s>f f* 10e f/ f- f+ f. cr cr
+
+." (8.)" cr \
+\ if 5 < 3 then 7 else 2
+: foo8 ( n1 < n2 ) < if 7 else 2 endif ;
+5 3 foo8 . cr cr
+
+." (9.)" cr \
+\ if 5 > 3 then 7 else 2
+: foo9 ( n1 < n2 ) > if 7 else 2 endif ;
+5 3 foo9 . cr cr
+
+." (10.)" cr \
+\ for ( i = 0; i <= 5; i++ )
+\	printf("%d ", i); 
+\
+: foo10 ( comment ) 6 0 ?DO i . LOOP ;
+foo10 cr cr
+
+." (11.) note: running '1 convertint' for demo" cr \
+\ double convertint(int x)
+\	{ return ((double)x); } 
+\
+: convertint ( int x -- double x ) s>f ;
+1 convertint f. cr cr
+\
+
+." (12.) note: running '3...5 fact' for demo" cr \
+\ int fact(int i)
+\ {
+\	if (i <= 0 ) return 1;
+\	else return i*fact(i-1);
+\ }
+\
+\ note: solution taken from gforth docs
+\
+: fact ( u -- u! ) 1 swap 1+ 1 u+do i * loop ;
+\ we will need to produce some output, right?
+3 fact . cr 
+4 fact . cr 
+5 fact . cr cr 
+
+." (13.) note: running '0...3 fib' for demo" cr \
+\ int fib(int i) {
+\    if(i == 0) return 0;
+\    else if(i == 1) return 1;
+\    else return fib(i-1) + fib(i-2);
+\ }
+\
+\ note: solution help from http://cubbi.com/fibonacci/forth.html
+\ there are dozens of solutions on forth forums, but I don't fully understand any of the
+\
+: fib ( n -- sum up to n )
+  dup 1 > if 
+  1- dup 1- recurse swap recurse + then
+;
+0 fib . cr 
+1 fib . cr 
+2 fib . cr 
+3 fib . cr cr
+
+bye

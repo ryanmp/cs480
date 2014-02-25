@@ -119,7 +119,7 @@ def binops(x):
 
 def unops(x):
 	if x[0][0] in ['trig_op','log_op']:
-		new_node = Node(x[0][1])
+		new_node = Node(x[0])
 		return 'unops->'+x[0][1]+',', new_node
 
 def constants(x):
@@ -141,6 +141,12 @@ def constants(x):
 		new_node.add_child(ret[1])
 		return 'constants->floats,' + ret[0], new_node
 
+	ret = bools(x)
+	if ret != None:
+		new_node = Node("constants->bools")
+		new_node.add_child(ret[1])
+		return 'constants->bools,' + ret[0], new_node
+
 def strings(x):
 	if (len(x) == 1):
 		if x[0][0] == 'string':
@@ -150,7 +156,7 @@ def strings(x):
 def name(x):
 	if (len(x) == 1):
 		if x[0][0] == 'ID':
-			new_node = Node(x[0][1])
+			new_node = Node(x[0])
 			return 'name->NAME,', new_node
 
 def ints(x):
@@ -162,8 +168,14 @@ def ints(x):
 def floats(x):
 	if (len(x) == 1):
 		if x[0][0] == 'real_number':
-			new_node = Node(x[0][1])
+			new_node = Node(x[0])
 			return 'floats->FLOATS', new_node
+
+def bools(x):
+	if (len(x) == 1):
+		if x[0][0] == 'bool_const':
+			new_node = Node(x[0])
+			return 'bool->BOOL_', new_node
 
 def stmts(x):
 	ret = ifstmts(x)
@@ -292,7 +304,7 @@ def varlist(x):
 def _type(x):
 	if x[0][0] == 'keyword':
 		if x[0][1] in ['bool','int','real', 'string']:
-			new_node = Node(x[0][1])
+			new_node = Node(x[0])
 			return 'type->'+x[0][1]+',',new_node
 
 '''
@@ -352,6 +364,7 @@ def tests(show_trees,show_derivations):
 
 	# should all be yes
 	ts = [
+
 		"[[if x y z]]",
 		"[[]]",
 		"[[[]]]",
@@ -373,10 +386,17 @@ def tests(show_trees,show_derivations):
 
 		'[[+ 1 [* [+ 2 3] 7]]]' # e.g. from class website
 
-
 		]
 
-	test(ts,show_trees,show_derivations)
+	ts2 = [
+		'[<=  10.1.1]',
+		'[[and 4x]]',
+		'[[]]',
+		'[[31.34e12]]'	
+
+	]
+
+	test(ts2,show_trees,show_derivations)
 
 	# should all be no
 	ts = [
@@ -387,7 +407,7 @@ def tests(show_trees,show_derivations):
 		"[1  x  [1 5]]" # e.g. from class website
 		]
 
-	test(ts,show_trees,show_derivations)
+	#test(ts,show_trees,show_derivations)
 
 
 	# error/edge cases

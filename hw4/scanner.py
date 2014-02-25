@@ -89,7 +89,7 @@ def scanner(x):
 		#relational ops
 		if CharType(x[i]) == 'equals':
 			i += 1
-			output.append(('relational_op','equals'))
+			output.append(('relational_op','='))
 		if CharType(x[i]) == 'exclamation':
 			if CharType(x[i+1]) == 'equals':
 				i += 2
@@ -164,26 +164,31 @@ def scanner(x):
 
 			#real x.xx & int
 			else:
+
 				isReal = 0
 				isExp = 0
 				tempVal = x[i]
+
 				while (CharType(x[i]) in ['digit','period']) and (i < len(x)-1):
 					if CharType(x[i]) == 'period':
 						isReal += 1
 					i += 1
 					tempVal += x[i]
 				
+
 				if (x[i] == 'e' or x[i] == 'E'):
+
 					i += 1
 					isExp += 1
 					
-					if CharType(x[i]) != 'digit':
-						return (output,False)
+					#if CharType(x[i]) != 'digit':
+					#	return (output,False)
 					
-					while (CharType(x[i]) in ['digit']) and (i < len(x)-1):
-						tempVal += x[i]
-						i += 1
-				
+					if x[i] == '-' or CharType(x[i]) in ['digit']:
+						while (CharType(x[i]) in ['digit']) and (i < len(x)-1):
+							tempVal += x[i]
+							i += 1
+					
 				if isExp == 0:		
 					tempVal = tempVal[:-1] #step back one char		
 				
