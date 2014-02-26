@@ -1,7 +1,6 @@
 import unittest
 import random
 from test_scanner import *
-from scanner_ryan import *
 from parser import *
 class TestScanner(unittest.TestCase):
 
@@ -160,6 +159,12 @@ class TestScientificNotation(unittest.TestCase):
     def test1_13_test_invalid_exponent(self):
         _input = "1.0e 1"
         expected_output = []
+        actual_output = scanner(_input)
+        self.assertEqual(expected_output, actual_output[0])
+    
+    def test1_14_test_negative_exponent(self):
+        _input = "1.0e-1"
+        expected_output = [('real_number','1.0e-1')]
         actual_output = scanner(_input)
         self.assertEqual(expected_output, actual_output[0])
    

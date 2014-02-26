@@ -164,6 +164,7 @@ def scanner(x):
 			else:
 				isReal = 0
 				isExp = 0
+				isExpSigned = 0
 				tempVal = x[i]
 				while (CharType(x[i]) in ['digit','period']) and (i < len(x)-1):
 					if CharType(x[i]) == 'period':
@@ -175,8 +176,16 @@ def scanner(x):
 					i += 1
 					isExp += 1
 					
+					# accept real x.xex or x.xEx
+					
 					if CharType(x[i]) != 'digit':
-						return (output,False)
+						if x[i] == '+' or x[i] == '-':
+							tempVal += x[i]
+							i += 1
+							isExpSigned += 1
+							# also accept real x.E+x or real x.xE-x
+						else:
+							return (output,False)
 					
 					while (CharType(x[i]) in ['digit']) and (i < len(x)-1):
 						tempVal += x[i]
@@ -185,13 +194,12 @@ def scanner(x):
 				if isExp == 0:		
 					tempVal = tempVal[:-1] #step back one char		
 				
-
 				if (isReal == 0): output.append(('int_number',tempVal))
+				elif (isExpSigned == 1): output.append(('real_number',tempVal))
 				elif (isExp == 1): output.append(('real_number', tempVal))
 				elif (isReal == 1): output.append(('real_number',tempVal))
 				else: return (output, False)
- 
-            
+				
 		#arithmatic op
 		if CharType(x[i]) == 'arithmatic':
 			output.append(('arithmatic_op',x[i]))
