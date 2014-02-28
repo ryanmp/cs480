@@ -8,7 +8,7 @@ def generator(x):
 	list_x.reverse()
 	ret = ''
 
-	to_transform = ['real_number','int_number']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop']
 
 	direct_translations = {
 		#no changes
@@ -19,7 +19,6 @@ def generator(x):
 		'>=':'>=',
 		'<=':'<=',
 		'+':'+',
-		'-':'-',
 		'*':'*',
 		'/':'/',
 		'and':'and',
@@ -43,9 +42,22 @@ def generator(x):
 
 				if i[0] == 'int_number':
 					ret += i[1] + ' '
-				# "do the transforms here"
-				# such as 5E0 -> 5e0
-				# this section will have a number of cases
+
+				if i[0] == 'minus-unop':
+					ret += 'negate' + ' '
+
+				if i[0] == 'minus-binop':
+					ret += '-' + ' '
+
+				if i[0] == 'real_number':
+
+					if (i[1].find("E") != -1):
+						tmp = i[1].replace("E", "e")
+						ret += tmp + ' '
+					elif (i[1].find("e") != -1):
+						ret += i[1] + ' '
+					else:	
+						ret += i[1] + 'e' + ' '
 
 			elif i[1] in direct_translations: #by value
 				ret += direct_translations[i[1]] + ' '
@@ -89,7 +101,9 @@ def test_generator():
 		'[[and true false]]',
 		'[[not true]]',
 		'[[^ 1e3 2e1]]',
-		'[[sin 2][cos 1.2]]'
+		'[[sin 2][cos 1.2]]',
+		'[[- 2]]',
+		'[[* 1.2E-1 1.5e2]]'
 	]
 	test(ts)
 

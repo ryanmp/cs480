@@ -116,10 +116,20 @@ def binops(x):
 	if x[0][0] in ['arithmatic_op','exponent_op','relational_op','log_op']:
 		new_node = Node(x[0])
 		return 'binops->'+x[0][1]+',', new_node
+	if x[0][0] == 'minus-sign':
+		new_node = Node(('minus-binop','-'))
+		return 'binops->'+x[0][1]+',', new_node
 
+		
+		
+
+# disambiguates 'minus-sign'
 def unops(x):
 	if x[0][0] in ['trig_op','log_op']:
 		new_node = Node(x[0])
+		return 'unops->'+x[0][1]+',', new_node
+	if x[0][0] == 'minus-sign':
+		new_node = Node(('minus-unop','-'))
 		return 'unops->'+x[0][1]+',', new_node
 
 def constants(x):

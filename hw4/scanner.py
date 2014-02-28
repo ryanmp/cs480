@@ -148,60 +148,101 @@ def scanner(x):
 	
 
 		#numbers
-		if CharType(x[i]) in ['digit','period']:
-			
+		if CharType(x[i]) in ['digit','period','minus-sign']:
+
+			tempVal = x[i]
+
+			isSigned = False
+			if CharType(x[i]) == 'minus-sign':
+				i += 1
+				tempVal += x[i]
+				isSigned = True
+
 			#real .xxx
 			if CharType(x[i]) == 'period':
-				tempVal = x[i]
+				#tempVal = x[i]
 				i += 1
 				while (CharType(x[i]) in ['digit','period']) and (i < len(x)-1):
-					if CharType(x[i]) == 'period':
-						return (output, False)
+	
 					tempVal += x[i]
 					i += 1
+
+					if CharType(x[i]) == 'period':
+						break
+
 				#tempVal = tempVal[:-1] #step back one char
-				output.append(('real_number',tempVal))
+				if (len(tempVal) > 1):
+					output.append(('real_number',tempVal))
 
 			#real x.xx & int
 			else:
 
 				isReal = 0
 				isExp = 0
-				tempVal = x[i]
-
+				isExpSigned = 0
+				#tempVal = x[i]
 				while (CharType(x[i]) in ['digit','period']) and (i < len(x)-1):
 					if CharType(x[i]) == 'period':
 						isReal += 1
 					i += 1
 					tempVal += x[i]
-				
 
+					#just one period per real
+					if isReal > 1:
+						tempVal = tempVal[:-2]
+						i -= 1
+						output.append(('real_number',tempVal))
+						break
+						
 				if (x[i] == 'e' or x[i] == 'E'):
-
 					i += 1
 					isExp += 1
-					
-					#if CharType(x[i]) != 'digit':
-					#	return (output,False)
-					
-					if x[i] == '-' or CharType(x[i]) in ['digit']:
-						while (CharType(x[i]) in ['digit']) and (i < len(x)-1):
+
+					# accept real x.xex or x.xEx
+
+					if CharType(x[i]) != 'digit':
+						if x[i] == '+' or x[i] == '-':
 							tempVal += x[i]
 							i += 1
-					
+							isExpSigned += 1
+							# also accept real x.E+x or real x.xE-x
+						else:
+							return (output,False)
+
+					while (CharType(x[i]) in ['digit']) and (i < len(x)-1):
+						tempVal += x[i]
+						i += 1
+
 				if isExp == 0:		
 					tempVal = tempVal[:-1] #step back one char		
-				
 
-				if (isReal == 0): output.append(('int_number',tempVal))
-				elif (isExp == 1): output.append(('real_number', tempVal))
-				elif (isReal == 1): output.append(('real_number',tempVal))
-				else: return (output, False)
- 
-            
+				if (isSigned):
+					if len(tempVal) > 1: # has to be longer than just a minus sign
+
+						if (isReal == 0): output.append(('int_number',tempVal))
+						elif (isExpSigned == 1): output.append(('real_number',tempVal))
+						elif (isExp == 1): output.append(('real_number', tempVal))
+						elif (isReal == 1): output.append(('real_number',tempVal))
+
+					else:
+						i -= 1
+
+				else: #non signed nums
+
+					if (isReal == 0): output.append(('int_number',tempVal))
+					elif (isExpSigned == 1): output.append(('real_number',tempVal))
+					elif (isExp == 1): output.append(('real_number', tempVal))
+					elif (isReal == 1): output.append(('real_number',tempVal))
+					
+		
 		#arithmatic op
 		if CharType(x[i]) == 'arithmatic':
 			output.append(('arithmatic_op',x[i]))
+			i += 1
+
+		#minus/negate
+		if CharType(x[i]) == 'minus-sign':
+			output.append(('minus-sign',x[i]))
 			i += 1
 
 		#exponent op
@@ -221,8 +262,10 @@ def CharType(x):
 		return 'digit'
 	if ord(x) == 46:
 		return 'period'
-	if ord(x) in [43,45,42,47,37]: # + - * / %
+	if ord(x) in [43,42,47,37]: # + * / %    
 		return 'arithmatic'
+	if ord(x) == 45:
+		return 'minus-sign'	
 	if ord(x) in [91]:
 		return 'bracket-l' # [
 	if ord(x) in [93]:
