@@ -6,9 +6,10 @@ def generator(x):
 
 	list_x = post_order_trav(x)
 	list_x.reverse()
+	#print 'list_x: ',list_x
 	ret = ''
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string']
 
 	direct_translations = {
 		#no changes
@@ -32,9 +33,10 @@ def generator(x):
 		'tan':'ftan',
 		'cos':'fcos',
 		'sin':'fsin',
-		'^':'f**'
+		'^':'f**',		
+		'stdout':'type'
 	}
-
+		
 	for i in list_x:
 		if (type(i) == tuple):
 
@@ -42,6 +44,7 @@ def generator(x):
 
 				if i[0] == 'int_number':
 					ret += i[1] + ' '
+
 
 				if i[0] == 'minus-unop':
 					ret += 'negate' + ' '
@@ -59,6 +62,9 @@ def generator(x):
 					else:	
 						ret += i[1] + 'e' + ' '
 
+				if i[0] == 'string':
+					ret += "s\" " +i[1] +"\" "
+				
 			elif i[1] in direct_translations: #by value
 				ret += direct_translations[i[1]] + ' '
 
@@ -68,12 +74,21 @@ def generator(x):
 
 	return ret
 
+def isOperator(x):
+	#TODO: find if a token defines an operator
+	return True
+
+def isConstant(x):
+	#TODO: find if a token defines a constant
+	return True
+
 
 def generate_gforth_script(x):
 	parser_out = parser(x)
 	parse_tree = parser_out[1]
+	print_tree(parse_tree)
 	gforth_code = generator(parse_tree)
-	output = gforth_code + '. CR bye'
+	output = gforth_code + 'CR bye'
 	return output
 
 
@@ -104,6 +119,8 @@ def test_generator():
 		'[[sin 2][cos 1.2]]',
 		'[[- 2]]',
 		'[[* 1.2E-1 1.5e2]]'
+		'[[stdout "hello world"]]'
+
 	]
 	test(ts)
 

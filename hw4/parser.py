@@ -160,7 +160,7 @@ def constants(x):
 def strings(x):
 	if (len(x) == 1):
 		if x[0][0] == 'string':
-			new_node = Node(x[0][1])
+			new_node = Node(x[0])
 			return 'strings->STRINGS', new_node
 
 def name(x):
@@ -218,8 +218,15 @@ def printstmts(x):
 			if x[1][0] == 'keyword' and x[1][1] =='stdout':
 				ret = oper(x[2:-1])
 				if ret != None:
+					#new_node = Node("printstmts->[stdout oper]")
+					#new_node.add_child(ret[1])
+					
 					new_node = Node("printstmts->[stdout oper]")
+					new_node_token = Node(x[1])
+					
+					new_node.add_child(new_node_token)
 					new_node.add_child(ret[1])
+					
 					return 'printstmts->[stdout oper],' + ret[0], new_node
 
 def ifstmts(x):
