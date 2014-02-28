@@ -3,11 +3,17 @@ from parser import *
 from tree import *
 
 def generator(x):
-
 	list_x = post_order_trav(x)
-	list_x.reverse()
-	#print 'list_x: ',list_x
+	isPrintStmt = False
+	foundStrConst = False
+	foundRealConst = False
+	
 	ret = ''
+	#print list_x
+	isPrintStmt = isPrintOp(list_x)
+	foundRealConst = detectFloat(list_x)
+	
+	list_x.reverse()
 
 	to_transform = ['real_number','int_number','minus-binop','minus-unop','string']
 
@@ -33,8 +39,8 @@ def generator(x):
 		'tan':'ftan',
 		'cos':'fcos',
 		'sin':'fsin',
-		'^':'f**',		
-		'stdout':'type'
+		'^':'f**',
+		'stdout':''
 	}
 		
 	for i in list_x:
@@ -44,16 +50,20 @@ def generator(x):
 
 				if i[0] == 'int_number':
 					ret += i[1] + ' '
-
+					if foundRealConst == True:
+						ret += 's>f '				
 
 				if i[0] == 'minus-unop':
-					ret += 'negate' + ' '
+					if foundRealConst == True:
+						ret += 'fnegate' + ' '
+					else:
+						ret += 'negate' + ' '
 
 				if i[0] == 'minus-binop':
 					ret += '-' + ' '
 
 				if i[0] == 'real_number':
-
+					foundRealConst = True
 					if (i[1].find("E") != -1):
 						tmp = i[1].replace("E", "e")
 						ret += tmp + ' '
@@ -64,23 +74,60 @@ def generator(x):
 
 				if i[0] == 'string':
 					ret += "s\" " +i[1] +"\" "
+					foundStrConst = True
 				
 			elif i[1] in direct_translations: #by value
-				ret += direct_translations[i[1]] + ' '
+				if (foundRealConst == True and isIntStackOp(i[1]) == True):
+					ret += convertToStackFloat(i[1])
+				else:
+					ret += direct_translations[i[1]] + ' '
 
 			else: 
 				print "error.. no gforth translation rule present for:",i," exiting..."
 				return -1
-
+	
+	
+	if isPrintStmt == True:
+		ret += getgForthPrintOp(foundStrConst,foundRealConst)
+	
 	return ret
 
-def isOperator(x):
-	#TODO: find if a token defines an operator
-	return True
+def isIntStackOp(x):
+	intStackOps = ['<','>','>=','<=','+','*','/','<>','negate']
+	
+	if x in intStackOps:
+		return True
+	else:
+		return False
 
-def isConstant(x):
-	#TODO: find if a token defines a constant
-	return True
+def convertToStackFloat(x):	
+	ret = ''
+	ret += 'f' + x + ' '	
+	return ret 
+
+def isPrintOp(x):
+	for i in x:
+		if (type(i) == tuple):
+			if i[1] == 'stdout':
+				return True
+	return False
+
+def getgForthPrintOp(isStrConst,isRealConst):
+	if isStrConst == True:
+		ret = 'type '
+	else:
+		if isRealConst == True:
+			ret = 'f. '
+		else:
+			ret = '. '
+	return ret 
+
+def detectFloat(x):
+	for i in x:
+		if (type(i) == tuple):
+			if i[0] == 'real_number':
+				return True
+	return False
 
 
 def generate_gforth_script(x):
@@ -118,8 +165,18 @@ def test_generator():
 		'[[^ 1e3 2e1]]',
 		'[[sin 2][cos 1.2]]',
 		'[[- 2]]',
-		'[[* 1.2E-1 1.5e2]]'
-		'[[stdout "hello world"]]'
+		'[[* 1.2E-1 1.5e2]]',
+		'[[+ 2 1.0]]',
+		'[[- 1.0]]',
+		'[[stdout [/ 1 2]]]',
+		'[[stdout [+ 2 1.0]]]',
+		'[[stdout "hello world"]]',
+		'[[stdout 1234]]',
+		'[[stdout 12.34]]',
+		'[[stdout [+ 1 2]]]',
+		'[[stdout [+ 2 [- 8 8]]]]',
+		'[[stdout [* 1.2E-1 1.5e2]]]',
+		'[[stdout [+ [sin 2] [cos 1.2]]]]'
 
 	]
 	test(ts)

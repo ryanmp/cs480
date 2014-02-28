@@ -34,7 +34,7 @@ clean:
 stutest.out:
 	python compiler.py -$(USEROPTIONS) $(TESTPATH)stutest1.in > stutest1.out
 	cat stutest1.out
-	@chmod 755 stutest1.out
+	@chmod 755 $(TESTPATH)stutest1.fs
 	@echo ""
 	@echo "gforth output:"
 	cat $(TESTPATH)stutest1.fs
