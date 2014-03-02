@@ -2,6 +2,26 @@ from scanner import *
 from parser import *
 from tree import *
 
+'''
+
+if true
+	then 7
+
+: foo true if 7 endif ; foo	.
+
+---
+
+if true 
+	then 3
+else 
+	4
+
+[[if true 3 4]]
+
+: foo true if 3 else 4 endif ; foo .
+
+'''
+
 def generator(x):
 	list_x = post_order_trav(x)
 	isPrintStmt = False
@@ -15,7 +35,7 @@ def generator(x):
 	
 	list_x.reverse()
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop','string']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt']
 
 	direct_translations = {
 		#no changes
@@ -47,6 +67,17 @@ def generator(x):
 		if (type(i) == tuple):
 
 			if i[0] in to_transform: #by type
+
+				#if then
+				if i[0] == 'if_stmt' and i[1] in ['if_then','if_then_else']:
+					ret +=  ': foo '
+				if i[0] == 'if_stmt' and i[1] in ['e','a']:
+					ret +=  'endif ; foo '
+				if i[0] == 'if_stmt' and i[1] in ['f', 'c']:
+					ret +=  'if '
+				if i[0] == 'if_stmt' and i[1] in ['b']:
+					ret +=  'else '
+
 
 				if i[0] == 'int_number':
 					ret += i[1] + ' '
@@ -176,9 +207,11 @@ def test_generator():
 		'[[stdout [+ 1 2]]]',
 		'[[stdout [+ 2 [- 8 8]]]]',
 		'[[stdout [* 1.2E-1 1.5e2]]]',
-		'[[stdout [+ [sin 2] [cos 1.2]]]]'
-
+		'[[stdout [+ [sin 2] [cos 1.2]]]]',
+		'[[if true 1]]',
+		'[[if false 1 2]]'
 	]
+
 	test(ts)
 
 test_generator()

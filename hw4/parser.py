@@ -238,19 +238,47 @@ def ifstmts(x):
 					ret2 = expr([x[3]])
 					ret3 = expr([x[4]])
 					if (ret1 != None and ret2 != None and ret3 != None):
-						new_node = Node("ifstmts->[if expr expr expr]")
-						new_node.add_child(ret1[1])
-						new_node.add_child(ret2[1])
+						new_node = Node(('if_stmt','if_then_else'))
+
+						tmp_node = Node(('if_stmt','a'))
+						new_node.add_child(tmp_node)
+
 						new_node.add_child(ret3[1])
+
+						tmp_node = Node(('if_stmt','b'))
+						new_node.add_child(tmp_node)
+
+						new_node.add_child(ret2[1])
+
+						tmp_node = Node(('if_stmt','c'))
+						new_node.add_child(tmp_node)
+
+						new_node.add_child(ret1[1])
+
+						tmp_node = Node(('if_stmt','d'))
+						new_node.add_child(tmp_node)
+
 						return 'ifstmts->[if expr expr expr],' + ret1[0] + ret2[0] + ret3[0], new_node
 
 				if (len(x) == 5):
 					ret1 = expr([x[2]])
 					ret2 = expr([x[3]])
 					if (ret1 != None and ret2 != None):
-						new_node = Node("ifstmts->[if expr expr]")
-						new_node.add_child(ret1[1])
+						new_node = Node(('if_stmt','if_then'))
+
+						tmp_node = Node(('if_stmt','e'))
+						new_node.add_child(tmp_node)
+
 						new_node.add_child(ret2[1])
+
+						tmp_node = Node(('if_stmt','f'))
+						new_node.add_child(tmp_node)
+
+						new_node.add_child(ret1[1])
+
+						tmp_node = Node(('if_stmt','g'))
+						new_node.add_child(tmp_node)
+
 						return 'ifstmts->[if expr expr],' + ret1[0] + ret2[0], new_node
 
 def whilestmts(x):
