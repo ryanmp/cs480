@@ -1,7 +1,7 @@
 from scanner import *
 from parser import *
 from tree import *
-
+import string
 '''
 
 if true
@@ -22,7 +22,47 @@ else
 
 '''
 
+def determine_invalid_type(node, parent):
+	result = ''
+	op_types = ['constants->floats', 'constants->ints','constants->bools']
+
+	if node.children > 0:
+		type_node = node.children[0]
+		
+		if type_node.data not in op_types:
+			
+			if type_node.children > 0:
+				token_data = type_node.children[0].data
+				if type(token_data) == tuple:
+					result = "\ttype error: expected a float or integer, but was given: '" + token_data[1] + "' of type " + token_data[0] 
+	return result
+
+def type_checker(x):
+	out = []
+	invalid_types = []
+	ops = ['oper->[binops oper oper]', 'oper->[unops oper]']
+	def inner(x):
+		if (x != None):
+			out.append(x.data)
+			
+			if (len(x.children) > 0):
+				parent = x.data
+				
+				for node in x.children:				
+					if (node != None):
+						if node.data == "oper->constants":
+							if parent in ops:
+								result = determine_invalid_type(node,parent)
+								if len(result) > 0:
+									invalid_types.append(result)
+						inner(node)
+	inner(x)
+	
+	for item in invalid_types:
+		print item
+
 def generator(x):
+	type_checker(x)
 	list_x = post_order_trav(x)
 	isPrintStmt = False
 	foundStrConst = False
@@ -209,9 +249,13 @@ def test_generator():
 		'[[stdout [* 1.2E-1 1.5e2]]]',
 		'[[stdout [+ [sin 2] [cos 1.2]]]]',
 		'[[if true 1]]',
-		'[[if false 1 2]]'
+		'[[if false 1 2]]',
+		'[[+ [* 1 2] [- 3 4]]]',
+		'[[+ 3 "test"]]',
+		'[[+ [+ 1 "two"] "three"]]',
+		'[[* 1 "2"]]',
+		'[[sin "2"]]'
 	]
-
 	test(ts)
 
 test_generator()
