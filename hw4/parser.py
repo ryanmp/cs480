@@ -382,7 +382,7 @@ def parser(x):
 		return parser_out
 
 	else:
-		print "scanner_failed" 
+		print chr(92) + " scanner_failed" 
 
 
 

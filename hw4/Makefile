@@ -9,7 +9,7 @@ SOURCE =
 RUNFLAGS = 
 
 TESTPATH = ./testfiles/
-
+TESTPATHFILES = ./testfiles/*
 # Usage
 # compiler [option] [files] 
 #    option '-g' Display grammar only
@@ -28,24 +28,32 @@ compiler: $(OBJS)
 	$(CCC) $(CCFLAGS) -o compiler $(OBJS)
 
 clean:
-	rm -f *.out *.pyc $(TESTPATH)*.fs
+	rm -f *.out *.pyc $(TESTPATH)*.fs *.fs
 	ls
 
 stutest.out:
-	python compiler.py -$(USEROPTIONS) $(TESTPATH)stutest1.in > stutest1.out
-	cat stutest1.out
-	@chmod 755 $(TESTPATH)stutest1.fs
+	python compiler.py -$(USEROPTIONS) $(TESTPATHFILES) > stutest.out
+	@echo "=========== Results =============="
+	cat stutest.out
+ifeq ($(USEROPTIONS),f)
+	@chmod 755 stutest.out
+	@echo "========== gForth Results ========"
+	gforth stutest.out
 	@echo ""
-	@echo "gforth output:"
-	cat $(TESTPATH)stutest1.fs
-	@echo ""
-	@echo ""
-	gforth $(TESTPATH)stutest1.fs
-	@echo ""
+endif
+	
 test:
 	python test_driver.py > test_driver.out
 
 proftest.out:
 	cat proftest.in
 	python compiler.py -$(USEROPTIONS) proftest.in > proftest.out
+	@echo "=========== Results =============="
 	cat proftest.out
+ifeq ($(USEROPTIONS),f)
+	@chmod 755 proftest.out
+	@echo "========== gForth Results ========"
+	gforth proftest.out
+	@echo ""
+endif
+

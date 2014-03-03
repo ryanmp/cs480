@@ -21,6 +21,7 @@ else
 : foo true if 3 else 4 endif ; foo .
 
 '''
+invalid_types = []
 
 def determine_invalid_type(node, parent):
 	result = ''
@@ -34,12 +35,14 @@ def determine_invalid_type(node, parent):
 			if type_node.children > 0:
 				token_data = type_node.children[0].data
 				if type(token_data) == tuple:
-					result = "\ttype error: expected a float or integer, but was given: '" + token_data[1] + "' of type " + token_data[0] 
+					result = chr(92) + " type error: expected a float or integer, but was given: '" + token_data[1] + "' of type " + token_data[0] + '\n'
 	return result
 
 def type_checker(x):
 	out = []
+	global invalid_types
 	invalid_types = []
+	
 	ops = ['oper->[binops oper oper]', 'oper->[unops oper]']
 	def inner(x):
 		if (x != None):
@@ -58,17 +61,23 @@ def type_checker(x):
 						inner(node)
 	inner(x)
 	
-	for item in invalid_types:
-		print item
+	#for item in invalid_types:
+	#	print item
+		
+	return invalid_types
 
 def generator(x):
-	type_checker(x)
+	ret = ''
+
+	if len(invalid_types) > 0:
+		return ret
+	
 	list_x = post_order_trav(x)
 	isPrintStmt = False
 	foundStrConst = False
 	foundRealConst = False
 	
-	ret = ''
+
 	#print list_x
 	isPrintStmt = isPrintOp(list_x)
 	foundRealConst = detectFloat(list_x)
@@ -131,7 +140,10 @@ def generator(x):
 						ret += 'negate' + ' '
 
 				if i[0] == 'minus-binop':
-					ret += '-' + ' '
+					if foundRealConst == True:
+						ret += 'f-' + ' '
+					else:
+						ret += '-' + ' '
 
 				if i[0] == 'real_number':
 					foundRealConst = True
@@ -152,7 +164,7 @@ def generator(x):
 					ret += convertToStackFloat(i[1])
 				else:
 					ret += direct_translations[i[1]] + ' '
-
+			
 			else: 
 				print "error.. no gforth translation rule present for:",i," exiting..."
 				return -1
@@ -164,7 +176,7 @@ def generator(x):
 	return ret
 
 def isIntStackOp(x):
-	intStackOps = ['<','>','>=','<=','+','*','/','<>','negate']
+	intStackOps = ['<','>','>=','<=','+','*','/','<>','negate','-']
 	
 	if x in intStackOps:
 		return True
@@ -185,12 +197,12 @@ def isPrintOp(x):
 
 def getgForthPrintOp(isStrConst,isRealConst):
 	if isStrConst == True:
-		ret = 'type '
+		ret = 'type CR'
 	else:
 		if isRealConst == True:
-			ret = 'f. '
+			ret = 'f. CR'
 		else:
-			ret = '. '
+			ret = '. CR'
 	return ret 
 
 def detectFloat(x):
@@ -202,13 +214,28 @@ def detectFloat(x):
 
 
 def generate_gforth_script(x):
+	
 	parser_out = parser(x)
-	parse_tree = parser_out[1]
-	print_tree(parse_tree)
-	gforth_code = generator(parse_tree)
-	output = gforth_code + 'CR bye'
-	return output
+	output = '\n' + chr(92) + ' input content: ' + str(x) + '\n' 
+	
+	if parser_out:	
+		parse_tree = parser_out[1]
+		
+		#print_tree(parse_tree)
 
+		type_errors = type_checker(parse_tree)
+	
+		for item in type_errors:
+			output += item
+		 
+		output += chr(92) + ' -------------------------------' + '\n' 
+	
+		gforth_code = generator(parse_tree)
+		output += gforth_code# + ' CR'
+		return output
+	else:
+		output += chr(92) + ' parsing failed on: ' + x
+		return output + '\n' 
 
 def test(ts):
 	test_results = []
@@ -258,7 +285,7 @@ def test_generator():
 	]
 	test(ts)
 
-test_generator()
+#test_generator()
 
 	
 
