@@ -1,0 +1,202 @@
+
+\ input file: ./testfiles/stutest1.in
+\ input content: [[stdout [+ 2 3]]]
+
+\ -------------------------------
+2 3 +  . CR
+
+\ input file: ./testfiles/stutest10.in
+\ input content: [[^ 1e3 2e1]]
+\ -------------------------------
+1e3 2e1 f** 
+
+\ input file: ./testfiles/stutest11.in
+\ input content: [[sin 2][cos 1.2]]
+\ -------------------------------
+2 s>f fsin 1.2e fcos 
+
+\ input file: ./testfiles/stutest12.in
+\ input content: [[- 2]]
+
+\ -------------------------------
+2 negate 
+
+\ input file: ./testfiles/stutest13.in
+\ input content: [[* 1.2E-1 1.5e2]]
+
+\ -------------------------------
+1.2e-1 1.5e2 f* 
+
+\ input file: ./testfiles/stutest14.in
+\ input content: [[+ 2 1.0]]
+\ -------------------------------
+2 s>f 1.0e f+ 
+
+\ input file: ./testfiles/stutest15.in
+\ input content: [[- 1.0]]
+
+\ -------------------------------
+1.0e fnegate 
+
+\ input file: ./testfiles/stutest16.in
+\ input content: [[stdout [/ 1 2]]]
+\ -------------------------------
+1 2 /  . CR
+
+\ input file: ./testfiles/stutest17.in
+\ input content: [[stdout [/ 1 2]]]
+
+\ -------------------------------
+1 2 /  . CR
+
+\ input file: ./testfiles/stutest18.in
+\ input content: [[stdout [+ 2 1.0]]]
+
+\ -------------------------------
+2 s>f 1.0e f+  f. CR
+
+\ input file: ./testfiles/stutest19.in
+\ input content: [[stdout "hello world"]]
+\ -------------------------------
+s" hello world"  type CR
+
+\ input file: ./testfiles/stutest2.in
+\ input content: [[stdout [- 2 3]]]
+
+\ -------------------------------
+2 3 -  . CR
+
+\ input file: ./testfiles/stutest20.in
+\ input content: [[stdout 1234]]
+
+\ -------------------------------
+1234  . CR
+
+\ input file: ./testfiles/stutest21.in
+\ input content: [[stdout 12.34]]
+
+\ -------------------------------
+12.34e  f. CR
+
+\ input file: ./testfiles/stutest22.in
+\ input content: [[stdout [+ 1 2]]]
+
+\ -------------------------------
+1 2 +  . CR
+
+\ input file: ./testfiles/stutest23.in
+\ input content: [[stdout [+ 2 [- 8 8]]]]
+
+\ -------------------------------
+2 8 8 - +  . CR
+
+\ input file: ./testfiles/stutest24.in
+\ input content: [[stdout [* 1.2E-1 1.5e2]]]
+
+\ -------------------------------
+1.2e-1 1.5e2 f*  f. CR
+
+\ input file: ./testfiles/stutest25.in
+\ input content: [[stdout [+ [sin 2] [cos 1.2]]]]
+
+\ -------------------------------
+2 s>f fsin 1.2e fcos f+  f. CR
+
+\ input file: ./testfiles/stutest26.in
+\ input content: [[if true 1]]
+
+\ -------------------------------
+: foo true if 1 endif ; foo 
+
+\ input file: ./testfiles/stutest27.in
+\ input content: [[if false 1 2]]
+
+\ -------------------------------
+: foo false if 1 else 2 endif ; foo 
+
+\ input file: ./testfiles/stutest28.in
+\ input content: [[+ [* 1 2] [- 3 4]]]
+
+\ -------------------------------
+1 2 * 3 4 - + 
+
+\ input file: ./testfiles/stutest29.in
+\ input content: [[+ 3 "test"]]
+
+\ type error: expected a float or integer, but was given: 'test' of type string
+\ -------------------------------
+
+
+\ input file: ./testfiles/stutest3.in
+\ input content: [[stdout [* 2 3]]]
+\ -------------------------------
+2 3 *  . CR
+
+\ input file: ./testfiles/stutest30.in
+\ input content: [[+ [+ 1 "two"] "three"]]
+
+\ type error: expected a float or integer, but was given: 'three' of type string
+\ type error: expected a float or integer, but was given: 'two' of type string
+\ -------------------------------
+
+
+\ input file: ./testfiles/stutest31.in
+\ input content: [[* 1 "2"]]
+
+\ type error: expected a float or integer, but was given: '2' of type string
+\ -------------------------------
+
+
+\ input file: ./testfiles/stutest32.in
+\ input content: [[sin "2"]]
+
+\ type error: expected a float or integer, but was given: '2' of type string
+\ -------------------------------
+
+
+\ input file: ./testfiles/stutest33.in
+\ input content: []
+
+\ parsing failed on: []
+
+
+
+\ input file: ./testfiles/stutest34.in
+\ input content: hello world
+\ parsing failed on: hello world
+
+
+\ input file: ./testfiles/stutest4.in
+\ input content: [[stdout [+ 2 [- 8 8]]]]
+
+\ -------------------------------
+2 8 8 - +  . CR
+
+\ input file: ./testfiles/stutest5.in
+\ input content: [[stdout [> 1 2]]]
+
+\ -------------------------------
+1 2 >  . CR
+
+\ input file: ./testfiles/stutest6.in
+\ input content: [[stdout [<= .02 1.102]]]
+
+\ -------------------------------
+.02e 1.102e f<=  f. CR
+
+\ input file: ./testfiles/stutest7.in
+\ input content: [[!= 4 2][= 1 1]]
+
+\ -------------------------------
+4 2 <> 1 1 = 
+
+\ input file: ./testfiles/stutest8.in
+\ input content: [[and true false]]
+\ -------------------------------
+true false and 
+
+\ input file: ./testfiles/stutest9.in
+\ input content: [[not true]]
+\ -------------------------------
+true negate 
+ CR bye
