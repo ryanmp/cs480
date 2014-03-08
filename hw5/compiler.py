@@ -8,7 +8,7 @@ from tree import *
 from generator import *
 
 files = []
-options = []    
+options = ['-f']    
 
 usage = """
 Usage:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 		print usage
 		sys.exit(2)
         
-	global options
+	#global options
 	prepare_files(sys.argv)
 	gfcode = ''
     
@@ -65,14 +65,14 @@ if __name__ == '__main__':
 		if '-f' in options:
 			# if multiple files, combine each script into one fs file
 			# for better output
-			gfcode = '\n' + chr(92) + ' input file: ' + str(selected_file)
+			#gfcode = '\n' + chr(92) + ' input file: ' + str(selected_file)
 			#gfcode += 's\" ' + str(selected_file) + '\" type CR'
 			gfcode += generate_gforth_script(content)
 			print gfcode	
 	
 
 		else:
-			print_verbose(selected_file,content)
+			#print_verbose(selected_file,content)
 			output = parse_file(content, options)
 		            
 			if output:
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 			else:
 				print " Error: Syntax error\n"
 			
-	if '-f' in options:
-		print ' CR bye'
+	#if '-f' in options:
+		#print ' CR bye'
 		
             

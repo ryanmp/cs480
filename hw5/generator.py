@@ -68,7 +68,9 @@ def generator2(x):
 	
 	list_x.reverse()
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID']
+
+
 
 	direct_translations = {
 		#no changes
@@ -142,6 +144,9 @@ def generator2(x):
 				if i[0] == 'string':
 					ret += "s\" " +i[1] +"\" "
 					foundStrConst = True
+
+				if i[0] == 'ID':
+					ret += i[1] + ' '
 				
 			elif i[1] in direct_translations: #by value
 				if (foundRealConst == True and isIntStackOp(i[1]) == True):
@@ -227,7 +232,8 @@ def generator(x):
 def generate_gforth_script(x):
 	
 	parser_out = parser(x)
-	output = '\n' + chr(92) + ' input content: ' + str(x) + '\n' 
+	output = ""
+	#output = '\n' + chr(92) + ' input content: ' + str(x) + '\n' 
 	
 	if parser_out:	
 		parse_tree = parser_out[1]
@@ -239,10 +245,11 @@ def generate_gforth_script(x):
 		for item in type_errors:
 			output += item
 		 
-		output += chr(92) + ' -------------------------------' + '\n' 
+		#output += chr(92) + ' -------------------------------' + '\n' 
 	
 		gforth_code = generator2(parse_tree)
-		output += gforth_code# + ' CR'
+		print gforth_code
+		output += gforth_code + ' '
 		return output
 	else:
 		output += chr(92) + ' parsing failed on: ' + x
