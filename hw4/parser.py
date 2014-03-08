@@ -441,7 +441,7 @@ def tests(show_trees,show_derivations):
 
 	]
 
-	test(ts2,show_trees,show_derivations)
+	#test(ts2,show_trees,show_derivations)
 
 	# should all be no
 	ts = [
@@ -458,12 +458,13 @@ def tests(show_trees,show_derivations):
 	# error/edge cases
 	# for finding bugs
 	ts = [
-		'[[while [= 5 x] [:= x [- x 1]]]]' # e.g. from class website
+		'[[if true 1 2]]',
+		'[[if true [+ 1 2] 2]]'
 		]
 
 	print ''
-	#test(ts,show_trees,show_derivations)
+	test(ts,show_trees,show_derivations)
 
 
 #usage: tests(show_tree?,show_derivation?)
-#tests(True,False) 
+tests(False,True) 

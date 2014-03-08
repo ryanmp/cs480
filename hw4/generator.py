@@ -2,6 +2,7 @@ from scanner import *
 from parser import *
 from tree import *
 import string
+
 '''
 
 if true
@@ -66,7 +67,7 @@ def type_checker(x):
 		
 	return invalid_types
 
-def generator(x):
+def generator2(x):
 	ret = ''
 
 	if len(invalid_types) > 0:
@@ -213,6 +214,33 @@ def detectFloat(x):
 	return False
 
 
+# just another function for demoing
+def generator(x):
+	parser_out = parser(x)
+	output = ""
+	#output = '\n' + chr(92) + ' input content: ' + str(x) + '\n' 
+	
+	if parser_out:	
+		parse_tree = parser_out[1]
+		
+		#print_tree(parse_tree)
+
+		type_errors = type_checker(parse_tree)
+	
+		for item in type_errors:
+			output += item
+		 
+		#output += chr(92) + ' -------------------------------' + '\n' 
+	
+		gforth_code = generator2(parse_tree)
+		output += " " + gforth_code# + ' CR'
+		print output
+
+	else:
+		output += chr(92) + ' parsing failed on: ' + x
+		print output + '\n' 
+
+
 def generate_gforth_script(x):
 	
 	parser_out = parser(x)
@@ -230,12 +258,14 @@ def generate_gforth_script(x):
 		 
 		output += chr(92) + ' -------------------------------' + '\n' 
 	
-		gforth_code = generator(parse_tree)
+		gforth_code = generator2(parse_tree)
 		output += gforth_code# + ' CR'
 		return output
 	else:
 		output += chr(92) + ' parsing failed on: ' + x
-		return output + '\n' 
+		return output + '\n'
+
+
 
 def test(ts):
 	test_results = []
@@ -246,7 +276,7 @@ def test(ts):
 		if parser_out:
 			parse_tree = parser_out[1]
 			#print_tree(parse_tree)
-			gforth_code = generator(parse_tree)
+			gforth_code = generator2(parse_tree)
 			print t, '  ->  ', gforth_code
 		else:
 			print 'parsing failed on: ',t
@@ -281,7 +311,11 @@ def test_generator():
 		'[[+ 3 "test"]]',
 		'[[+ [+ 1 "two"] "three"]]',
 		'[[* 1 "2"]]',
-		'[[sin "2"]]'
+		'[[sin "2"]]',
+
+		''
+
+
 	]
 	test(ts)
 
