@@ -97,7 +97,8 @@ def generator2(x):
 		'^':'f**',
 		'stdout':''
 	}
-		
+	
+	idx = 0	# conditional anonymous function name indexer
 	for i in list_x:
 		if (type(i) == tuple):
 
@@ -105,14 +106,15 @@ def generator2(x):
 
 				#if then
 				if i[0] == 'if_stmt' and i[1] in ['if_then','if_then_else']:
-					ret +=  ': foo '
+					idx += 1
+					ret +=  ': foo'+ str(idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals
 				if i[0] == 'if_stmt' and i[1] in ['e','a']:
-					ret +=  'endif ; foo '
+					ret +=  'endif ; foo'+ str(idx)+' '
+					idx -= 1
 				if i[0] == 'if_stmt' and i[1] in ['f', 'c']:
 					ret +=  'if '
 				if i[0] == 'if_stmt' and i[1] in ['b']:
 					ret +=  'else '
-
 
 				if i[0] == 'int_number':
 					ret += i[1] + ' '
@@ -248,7 +250,7 @@ def generate_gforth_script(x):
 		#output += chr(92) + ' -------------------------------' + '\n' 
 	
 		gforth_code = generator2(parse_tree)
-		print gforth_code
+		#print gforth_code
 		output += gforth_code + ' '
 		return output
 	else:
@@ -295,18 +297,15 @@ def test_generator():
 		'[[stdout [+ 2 [- 8 8]]]]',
 		'[[stdout [* 1.2E-1 1.5e2]]]',
 		'[[stdout [+ [sin 2] [cos 1.2]]]]',
-		'[[if true 1]]',
-		'[[if false 1 2]]',
+		'[[if true [if true true] [* 1 3]]]',
 		'[[+ [* 1 2] [- 3 4]]]',
 		'[[+ 3 "test"]]',
 		'[[+ [+ 1 "two"] "three"]]',
 		'[[* 1 "2"]]',
-		'[[sin "2"]]',
-
-		''
-
+		'[[sin "2"]]'
 
 	]
+
 	test(ts)
 
 #test_generator()

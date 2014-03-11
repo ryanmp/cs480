@@ -231,36 +231,45 @@ def ifstmts(x):
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if (x[1][0] == 'keyword' and x[1][1] == 'if'):
-				if (len(x) == 6):
+				if (len(x) >= 6):
 					ret1 = expr([x[2]])
-					ret2 = expr([x[3]])
-					ret3 = expr([x[4]])
-					if (ret1 != None and ret2 != None and ret3 != None):
-						new_node = Node(('if_stmt','if_then_else'))
 
-						tmp_node = Node(('if_stmt','a'))
-						new_node.add_child(tmp_node)
+					for i in range(4,len(x)):
+						ret2 = expr(x[3:i])
+						ret3 = expr(x[i:-1])
 
-						new_node.add_child(ret3[1])
+						if (ret1 != None and ret2 != None and ret3 != None):
+							new_node = Node(('if_stmt','if_then_else'))
 
-						tmp_node = Node(('if_stmt','b'))
-						new_node.add_child(tmp_node)
+							tmp_node = Node(('if_stmt','a'))
+							new_node.add_child(tmp_node)
 
-						new_node.add_child(ret2[1])
+							new_node.add_child(ret3[1])
 
-						tmp_node = Node(('if_stmt','c'))
-						new_node.add_child(tmp_node)
+							tmp_node = Node(('if_stmt','b'))
+							new_node.add_child(tmp_node)
 
-						new_node.add_child(ret1[1])
+							new_node.add_child(ret2[1])
 
-						tmp_node = Node(('if_stmt','d'))
-						new_node.add_child(tmp_node)
+							tmp_node = Node(('if_stmt','c'))
+							new_node.add_child(tmp_node)
 
-						return 'ifstmts->[if expr expr expr],' + ret1[0] + ret2[0] + ret3[0], new_node
+							new_node.add_child(ret1[1])
 
-				if (len(x) == 5):
+							tmp_node = Node(('if_stmt','d'))
+							new_node.add_child(tmp_node)
+
+							return 'ifstmts->[if expr expr expr],' + ret1[0] + ret2[0] + ret3[0], new_node
+
+				if (len(x) >= 5):
+
 					ret1 = expr([x[2]])
-					ret2 = expr([x[3]])
+
+					if len(x[3:-1])>1: # further recursion
+						ret2 = expr(x[3:-1])
+					else:
+						ret2 = expr([x[3]])
+
 					if (ret1 != None and ret2 != None):
 						new_node = Node(('if_stmt','if_then'))
 
