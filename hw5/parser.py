@@ -231,6 +231,28 @@ def ifstmts(x):
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if (x[1][0] == 'keyword' and x[1][1] == 'if'):
+				if (len(x) > 6):
+					# for now let's go with the case where we get the form [if true stmts] only
+					ret1 = expr([x[2]])
+					ret2 = stmts(x[3:-1])
+					if (ret1 != None and ret2 != None):
+						new_node = Node(('if_stmt','if_then'))
+
+						tmp_node = Node(('if_stmt','e'))
+						new_node.add_child(tmp_node)
+
+						new_node.add_child(ret2[1])
+
+						tmp_node = Node(('if_stmt','f'))
+						new_node.add_child(tmp_node)
+
+						new_node.add_child(ret1[1])
+
+						tmp_node = Node(('if_stmt','g'))
+						new_node.add_child(tmp_node)
+						return 'ifstmts->[if expr expr expr],' + ret1[0] + ret2[0], new_node
+
+ 
 				if (len(x) == 6):
 					ret1 = expr([x[2]])
 					ret2 = expr([x[3]])
