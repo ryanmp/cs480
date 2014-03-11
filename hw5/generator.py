@@ -97,11 +97,13 @@ def generator2(x):
 		'^':'f**',
 		'stdout':''
 	}
-	
-	idx = 0	# conditional anonymous function name indexer
-	for i in list_x:
-		if (type(i) == tuple):
 
+	idx = 0	# conditional anonymous function name indexer
+	k = -1
+
+	for i in list_x:
+		k += 1
+		if (type(i) == tuple):
 			if i[0] in to_transform: #by type
 
 				#if then
@@ -146,6 +148,10 @@ def generator2(x):
 				if i[0] == 'string':
 					ret += "s\" " +i[1] +"\" "
 					foundStrConst = True
+					if (k > 0):
+						if list_x[k+1][1] == 'stdout':
+							ret += getgForthPrintOp(foundStrConst,foundRealConst)
+
 
 				if i[0] == 'ID':
 					ret += i[1] + ' '
@@ -155,6 +161,10 @@ def generator2(x):
 					ret += convertToStackFloat(i[1])
 				else:
 					ret += direct_translations[i[1]] + ' '
+				
+				if (k > 0 and k < len(list_x)-1):
+					if list_x[k+1][1] == 'stdout':
+						ret += getgForthPrintOp(False,foundRealConst)
 			
 			else: 
 				print "error.. no gforth translation rule present for:",i," exiting..."
@@ -180,10 +190,16 @@ def convertToStackFloat(x):
 	return ret 
 
 def isPrintOp(x):
+	y = []
 	for i in x:
 		if (type(i) == tuple):
-			if i[1] == 'stdout':
-				return True
+			y.append(i)
+
+	if len(y) > 0:
+		y.reverse()
+		if y[0][1] == 'stdout':
+			return True
+		
 	return False
 
 def getgForthPrintOp(isStrConst,isRealConst):
@@ -240,7 +256,7 @@ def generate_gforth_script(x):
 	if parser_out:	
 		parse_tree = parser_out[1]
 		
-		#print_tree(parse_tree)
+		print_tree(parse_tree)
 
 		type_errors = type_checker(parse_tree)
 	
@@ -302,7 +318,10 @@ def test_generator():
 		'[[+ 3 "test"]]',
 		'[[+ [+ 1 "two"] "three"]]',
 		'[[* 1 "2"]]',
-		'[[sin "2"]]'
+		'[[sin "2"]]',
+		'[[if true [stdout "true"]]]',
+		'[[if false [stdout [+ 1 2]]]]',
+		'[[if false [stdout [+ 1 [- 1 2.0]]]]]'
 
 	]
 

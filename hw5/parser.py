@@ -231,6 +231,7 @@ def ifstmts(x):
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if (x[1][0] == 'keyword' and x[1][1] == 'if'):
+
 				if (len(x) >= 6):
 					ret1 = expr([x[2]])
 
