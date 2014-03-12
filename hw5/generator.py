@@ -58,6 +58,8 @@ def generator2(x):
 	
 	list_x = post_order_trav(x)
 	isPrintStmt = False
+	nestedIf = False
+	
 	foundStrConst = False
 	foundRealConst = False
 	
@@ -99,8 +101,9 @@ def generator2(x):
 	}
 
 	idx = 0	# conditional anonymous function name indexer
-	k = -1
-
+	k = -1 # index to keep track of the items in list_x and use it to evaluate stdout if found in next token
+	m = 0 # state to detect inner ifs
+	
 	for i in list_x:
 		k += 1
 		if (type(i) == tuple):
@@ -109,10 +112,23 @@ def generator2(x):
 				#if then
 				if i[0] == 'if_stmt' and i[1] in ['if_then','if_then_else']:
 					idx += 1
-					ret +=  ': foo'+ str(idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals
+					if nestedIf == False:
+						ret +=  ': foo'+ str(idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals
+						
+					nestedIf = True
+					m += 1
+				
 				if i[0] == 'if_stmt' and i[1] in ['e','a']:
-					ret +=  'endif ; foo'+ str(idx)+' '
-					idx -= 1
+					m -= 1
+					
+					if m <= 0:
+						nestedIf = False
+						ret +=  'endif ; foo'+ str(idx)+' '	
+					else:
+						ret += 'endif '
+					
+					#idx -= 1
+					
 				if i[0] == 'if_stmt' and i[1] in ['f', 'c']:
 					ret +=  'if '
 				if i[0] == 'if_stmt' and i[1] in ['b']:
@@ -321,8 +337,12 @@ def test_generator():
 		'[[sin "2"]]',
 		'[[if true [stdout "true"]]]',
 		'[[if false [stdout [+ 1 2]]]]',
-		'[[if false [stdout [+ 1 [- 1 2.0]]]]]'
-
+		'[[if false [stdout [+ 1 [- 1 2.0]]]]]',
+		'[[if true 1 2]]',
+		'[[if true [stdout "true"] [stdout "false"]]]',
+		'[[if true [if false false] [if true true]]]',
+		'[[if true true] [if false false]]',
+		'[[if true [stdout "true"]] [if false [stdout "false"]]]'
 	]
 
 	test(ts)
