@@ -126,8 +126,7 @@ def generator2(x):
 						ret +=  'endif ; foo'+ str(idx)+' '	
 					else:
 						ret += 'endif '
-					
-					#idx -= 1
+						idx -= 1
 					
 				if i[0] == 'if_stmt' and i[1] in ['f', 'c']:
 					ret +=  'if '
