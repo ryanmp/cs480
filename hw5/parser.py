@@ -70,7 +70,9 @@ def oper(x):
 				ret1 = name([x[2]]) 
 				ret2 = oper(x[3:-1])
 				if (ret1 != None and ret2 != None):
-					new_node = Node("oper->[:= name oper]")
+					new_node = Node(('assignment_op','start'))
+					oper_node = Node(('assignment_op','end'))
+					new_node.add_child(oper_node)
 					new_node.add_child(ret1[1])
 					new_node.add_child(ret2[1])
 					return 'oper->[:= name oper],' + ret1[0] + ret2[0], new_node

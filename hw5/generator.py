@@ -70,7 +70,7 @@ def generator2(x):
 	
 	list_x.reverse()
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op']
 
 
 
@@ -104,6 +104,8 @@ def generator2(x):
 	k = -1 # index to keep track of the items in list_x and use it to evaluate stdout if found in next token
 	m = 0 # state to detect inner ifs
 	
+	setting_var = False #checking to see if var is being set or used
+
 	for i in list_x:
 		k += 1
 		if (type(i) == tuple):
@@ -166,11 +168,21 @@ def generator2(x):
 					if (k > 0):
 						if list_x[k+1][1] == 'stdout':
 							ret += getgForthPrintOp(foundStrConst,foundRealConst)
-
-
-				if i[0] == 'ID':
-					ret += i[1] + ' '
 				
+				if (setting_var == False):
+					if i[0] == 'ID':
+						ret += i[1] + ' @ '
+				else:
+					if i[0] == 'ID':
+						ret += 'VARIABLE'+' '+i[1]+' '+i[1] + ' '
+
+				if i[0] == 'assignment_op':
+					if i[1] == 'start':
+						setting_var = True
+					if i[1] == 'end':
+						setting_var = False
+						ret += '! '
+	
 			elif i[1] in direct_translations: #by value
 				if (foundRealConst == True and isIntStackOp(i[1]) == True):
 					ret += convertToStackFloat(i[1])
@@ -341,12 +353,13 @@ def test_generator():
 		'[[if true [stdout "true"] [stdout "false"]]]',
 		'[[if true [if false false] [if true true]]]',
 		'[[if true true] [if false false]]',
-		'[[if true [stdout "true"]] [if false [stdout "false"]]]'
+		'[[if true [stdout "true"]] [if false [stdout "false"]]]',
+		'[[:= x 2][stdout[+ 7 x]]]'
 	]
 
 	test(ts)
 
-#test_generator()
+test_generator()
 
 	
 
