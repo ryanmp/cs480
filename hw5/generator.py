@@ -178,7 +178,7 @@ def generator2(x):
 						if (i[1] in var_definitions and list_x[k+1][1] == "stdout"):
 							print_eval = getPrintVar(var_definitions, i[1])
 							ret += i[1] + ' @ ' + print_eval + ' '
-						else:
+						if (i[1] not in var_definitions):
 							ret += i[1] + ' @ '
 						
 				else:
