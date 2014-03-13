@@ -175,13 +175,20 @@ def generator2(x):
 						if (i[1] in var_definitions and list_x[k+1][1] == "stdout"):
 							print_eval = getPrintVar(var_definitions, i[1])
 							ret += i[1] + ' @ ' + print_eval + ' '
-						if (i[1] not in var_definitions):
-							ret += i[1] + ' @ '
+						elif (i[1] in var_definitions and var_definitions[i[1]] == 'real'):
+							ret += i[1] + ' f@ '	
+						elif (i[1] not in var_definitions):
+							ret += i[1] + ' @ '	
 						
 				else:
 					if i[0] == 'ID':
-						ret += 'VARIABLE'+' '+i[1]+' '+i[1] + ' '
-
+						# is it type float?
+						# if so we have set the variable like this...
+						if (i[1] in var_definitions and var_definitions[i[1]] == 'real'):
+							ret += 'FVARIABLE'+' '+i[1]+' '+i[1] + ' f'
+						else:
+							ret += 'VARIABLE'+' '+i[1]+' '+i[1] + ' '
+						
 				if i[0] == 'assignment_op':
 					if i[1] == 'start':
 						setting_var = True
@@ -367,6 +374,7 @@ def test(ts):
 
 def test_generator():
 	ts = [
+
 		'[[+ 2 [- 8 8]]]',
 		'[[> 1 2]]',
 		'[[<= .02 1.102]]',
@@ -406,10 +414,14 @@ def test_generator():
 		'[[let [[x int]]] [:= x 10] [stdout x]]',
 		'[[let [[y real]]] [:= y 1.0] [stdout y]]',
 		'[[let [[z string]]] [:= z "hello world"] [stdout z]]'
+		#'[ [:= x 5] [while [< x 1][stdout "."][:= x [+ x 1]] ]]'
 	]
 
 	ts2 = [
-		'[ [:= x 5] [while [< x 1][stdout "."][:= x [+ x 1]] ]]'
+		'[[:= x 2][stdout[+ 7 x]]]',
+		#'[[let [[x int]]] [:= x 10] [stdout x]]',
+		'[[let [[y real]]] [:= y 1.0] [stdout y]]'
+		#'[[let [[z string]]] [:= z "hello world"] [stdout z]]'
 	]
 
 	test(ts2)
