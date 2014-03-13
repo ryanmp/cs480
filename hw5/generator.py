@@ -70,8 +70,7 @@ def generator2(x):
 	
 	list_x.reverse()
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op']
-
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op','whilestmts']
 
 
 	direct_translations = {
@@ -182,6 +181,12 @@ def generator2(x):
 					if i[1] == 'end':
 						setting_var = False
 						ret += '! '
+
+				if i[0] == 'whilestmts':
+					if i[1] == 'start':
+						ret += ": loop1 BEGIN "
+					if i[1] == 'end':
+						ret += "UNTIL ; loop1 "
 	
 			elif i[1] in direct_translations: #by value
 				if (foundRealConst == True and isIntStackOp(i[1]) == True):
@@ -357,7 +362,11 @@ def test_generator():
 		'[[:= x 2][stdout[+ 7 x]]]'
 	]
 
-	test(ts)
+	ts2 = [
+		'[ [:= x 5] [while [< x 1][stdout "."][:= x [+ x 1]] ]]'
+	]
+
+	test(ts2)
 
 test_generator()
 

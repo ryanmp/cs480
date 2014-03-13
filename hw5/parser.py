@@ -300,9 +300,12 @@ def whilestmts(x):
 					ret1 = expr(y[i:])
 					ret2 = exprlist(y[:i])
 					if (ret1 != None and ret2 != None):
-						new_node = Node("whilestmts->[while expr exprlist]")
-						new_node.add_child(ret1[1])
+						#new_node = Node("whilestmts->[while expr exprlist]")
+						new_node = Node(("whilestmts",'start'))
+						end_node = Node(("whilestmts",'end'))
+						new_node.add_child(end_node)
 						new_node.add_child(ret2[1])
+						new_node.add_child(ret1[1])
 						return 'whilestmts->[while expr exprlist],' + ret1[0] + ret2[0], new_node
 
 def exprlist(x):
