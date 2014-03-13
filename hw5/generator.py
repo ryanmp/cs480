@@ -63,15 +63,15 @@ def generator2(x):
 	foundStrConst = False
 	foundRealConst = False
 	
-
 	#print list_x
+	
+	
 	isPrintStmt = isPrintOp(list_x)
 	foundRealConst = detectFloat(list_x)
 	
 	list_x.reverse()
 
 	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op','whilestmts']
-
 
 	direct_translations = {
 		#no changes
@@ -102,11 +102,13 @@ def generator2(x):
 	idx = 0	# conditional anonymous function name indexer
 	k = -1 # index to keep track of the items in list_x and use it to evaluate stdout if found in next token
 	m = 0 # state to detect inner ifs
-	
+	var_definitions = {} #symbol table or list of ids with their types (id, type)
 	setting_var = False #checking to see if var is being set or used
 
+	
 	for i in list_x:
 		k += 1
+		
 		if (type(i) == tuple):
 			if i[0] in to_transform: #by type
 
@@ -170,7 +172,12 @@ def generator2(x):
 				
 				if (setting_var == False):
 					if i[0] == 'ID':
-						ret += i[1] + ' @ '
+						if (i[1] in var_definitions and list_x[k+1][1] == "stdout"):
+							print_eval = getPrintVar(var_definitions, i[1])
+							ret += i[1] + ' @ ' + print_eval + ' '
+						if (i[1] not in var_definitions):
+							ret += i[1] + ' @ '
+						
 				else:
 					if i[0] == 'ID':
 						ret += 'VARIABLE'+' '+i[1]+' '+i[1] + ' '
@@ -198,10 +205,18 @@ def generator2(x):
 					if list_x[k+1][1] == 'stdout':
 						ret += getgForthPrintOp(False,foundRealConst)
 			
+			elif i[0] in ['keyword']:
+				#detect let statements
+				if (k > 0):
+					if list_x[k+1][0] == 'ID':
+						var_def = getIdAndType(list_x, k)
+						if var_def:
+							var_definitions[var_def[0]] = var_def[1]
+						
 			else: 
 				print "error.. no gforth translation rule present for:",i," exiting..."
 				return -1
-	
+
 	
 	if isPrintStmt == True:
 		ret += getgForthPrintOp(foundStrConst,foundRealConst)
@@ -233,6 +248,34 @@ def isPrintOp(x):
 			return True
 		
 	return False
+
+
+def getIdAndType(list_x, k):
+	var_def = ()
+	valid_types = ['real','int','string']
+	
+	if (type(list_x[k]) == tuple and type(list_x[k+1]) == tuple):
+		if list_x[k][1] not in valid_types:
+			return var_def
+	
+		type_str = list_x[k][1]
+		id_str = list_x[k+1][1]
+		var_def = (id_str,type_str)
+
+	return var_def
+
+# determine proper print op for a given id in a symbol table or variable definitions list
+def getPrintVar(var_list, id):
+	tmp_type = var_list[id]
+	if tmp_type == 'int':
+		print_eval = getgForthPrintOp(False, False)
+	elif tmp_type == 'real':
+		print_eval = getgForthPrintOp(False, True)
+	elif tmp_type == 'string':
+		print_eval = getgForthPrintOp(True, False)
+	
+	return print_eval
+	
 
 def getgForthPrintOp(isStrConst,isRealConst):
 	if isStrConst == True:
@@ -299,7 +342,7 @@ def generate_gforth_script(x):
 	
 		gforth_code = generator2(parse_tree)
 		#print gforth_code
-		output += gforth_code + ' '
+		output += str(gforth_code) + ' '
 		return output
 	else:
 		output += chr(92) + ' parsing failed on: ' + x
@@ -359,7 +402,10 @@ def test_generator():
 		'[[if true [if false false] [if true true]]]',
 		'[[if true true] [if false false]]',
 		'[[if true [stdout "true"]] [if false [stdout "false"]]]',
-		'[[:= x 2][stdout[+ 7 x]]]'
+		'[[:= x 2][stdout[+ 7 x]]]',
+		'[[let [[x int]]] [:= x 10] [stdout x]]',
+		'[[let [[y real]]] [:= y 1.0] [stdout y]]',
+		'[[let [[z string]]] [:= z "hello world"] [stdout z]]'
 	]
 
 	ts2 = [
