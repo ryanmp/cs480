@@ -5,8 +5,7 @@ from tree import *
 import string
 import os
 
-invalid_types = []
-var_definitions = {} #symbol table or list of ids with their types (id, type)
+semantic_errors = []
 
 def determine_invalid_type(node, parent):
 	result = ''
@@ -20,12 +19,11 @@ def determine_invalid_type(node, parent):
 			if type_node.children > 0:
 				token_data = type_node.children[0].data
 				if type(token_data) == tuple:
-					result = chr(92) + " type error: expected a float or integer, but was given: '" + token_data[1] + "' of type " + token_data[0] + '\n'
+					result = "\n\ttype error: expected a float or integer, but was given: '" + token_data[1] + "' of type " + token_data[0]
 	return result
 
 def type_checker(x):
 	out = []
-	global invalid_types
 	invalid_types = []
 	
 	ops = ['oper->[binops oper oper]', 'oper->[unops oper]']
@@ -54,9 +52,8 @@ def type_checker(x):
 def generator2(x):
 	ret = ''
 
-	if len(invalid_types) > 0:
-		return ret
-	
+	semantic_errors = type_checker(x)
+
 	list_x = post_order_trav(x)
 	isPrintStmt = False
 	nestedIf = False
@@ -99,6 +96,9 @@ def generator2(x):
 		'^':'f**',
 		'stdout':''
 	}
+	
+	int_float_only_ops = ['*','-','/','%','>','<','>=','<=','and','or','not','sin','cos','tan','^']
+
 
 	f_idx = 0	# conditional anonymous function name indexer
 	k = -1 # index to keep track of the items in list_x and use it to evaluate stdout if found in next token
@@ -180,17 +180,24 @@ def generator2(x):
 							if (list_x[k+1][1] == "stdout"):
 
 								print_eval = getPrintVar(i[1])
-								
+																
 								if (symbol_table[i[1]] == 'real'):
 									ret += i[1] + ' f@ ' + print_eval + ' '
 								elif (symbol_table[i[1]] in ['int','string']):
-									ret += i[1] + ' @ ' + print_eval + ' '
-		
+									ret += i[1] + ' @ ' + print_eval + ' '								
+								else:
+									semantic_errors.append("\n\tUndefined variable: '" + i[1] + "' undeclared or referenced before assignment")
 							else:
 								if (symbol_table[i[1]] == 'real'):
 									ret += i[1] + ' f@ ' 
 								elif (symbol_table[i[1]] in ['int','string']):
-									ret += i[1] + ' @ ' 
+									ret += i[1] + ' @ '
+						
+									if (symbol_table[i[1]] == 'string' and list_x[k+1][1] in int_float_only_ops):
+										semantic_errors.append("\n\ttype error: type of variable '" + i[1] + "' is not a valid type for '" + list_x[k+1][1] +"'")
+																			 
+								else:
+									semantic_errors.append("\n\tUndefined variable: '" + i[1] + "' undeclared or referenced before assignment")
 
 				elif (setting_var == False and in_varlist != 0):
 					if i[0] == 'ID':
@@ -199,12 +206,24 @@ def generator2(x):
 							ret += 'FVARIABLE ' + i[1] + ' '
 						elif list_x[idx-1][1] in ['int','string']:	
 							ret += 'VARIABLE ' + i[1] + ' '
+						else:
+							semantic_errors.append("\n\tUndefined variable: '" + i[1] + "' undeclared or referenced before assignment")
+							
 				elif (setting_var == True and in_varlist == 0):
 					if i[0] == 'ID':
+
+						type_id_in_symbol_table = symbol_table[i[1]] 
+						type_id_in_assignment_op = list_x[k-1][0]
+						 
+						if is_assignment_invalid(type_id_in_symbol_table, type_id_in_assignment_op) == True:
+							semantic_errors.append("\n\ttype error: '" + i[1] + "' assignment of the wrong type")
+							
 						if (symbol_table[i[1]] == 'real'):
 							ret += i[1] + ' f! '
 						elif (symbol_table[i[1]] in ['int','string']):
 							ret += i[1] + ' ! '
+						else:
+							semantic_errors.append("\n\tUndefined variable: '" + i[1] + "' undeclared or referenced before assignment")
 				#end variable logic
 				
 				if i[0] == 'assignment_op':
@@ -244,7 +263,29 @@ def generator2(x):
 	if isPrintStmt == True:
 		ret += getgForthPrintOp(foundStrConst,foundRealConst)
 	
+	if len(semantic_errors) > 0:
+		print_error_messages(semantic_errors)
+	
 	return ret
+
+def is_assignment_invalid(type1, type2):
+	if type1 == "real_number":
+		type1 = "real"
+	if type2 == "real_number":
+		type2 = "real"
+	if type1 == "int_number":
+		type1 = "int"
+	if type2 == "int_number":
+		type2 = "int"
+	
+	if type1 != type2:
+		return True
+	else:
+		return False
+	
+def print_error_messages(error_list):
+	for item in error_list:
+		print item
 
 def isIntStackOp(x):
 	intStackOps = ['<','>','>=','<=','+','*','/','<>','negate','-']
@@ -296,18 +337,19 @@ def getPrintVar(id):
 		print_eval = getgForthPrintOp(False, True)
 	elif tmp_type == 'string':
 		print_eval = getgForthPrintOp(True, False)
-	
+	else:
+		print_eval = ''
 	return print_eval
 	
 
 def getgForthPrintOp(isStrConst,isRealConst):
 	if isStrConst == True:
-		ret = 'type CR'
+		ret = 'type CR '
 	else:
 		if isRealConst == True:
-			ret = 'f. CR'
+			ret = 'f. CR '
 		else:
-			ret = '. CR'
+			ret = '. CR '
 	return ret 
 
 def detectFloat(x):
@@ -414,10 +456,6 @@ def test_generator():
 		'[[stdout [+ [sin 2] [cos 1.2]]]]',
 		'[[if true [if true true] [* 1 3]]]',
 		'[[+ [* 1 2] [- 3 4]]]',
-		'[[+ 3 "test"]]',
-		'[[+ [+ 1 "two"] "three"]]',
-		'[[* 1 "2"]]',
-		'[[sin "2"]]',
 		'[[if true [stdout "true"]]]',
 		'[[if false [stdout [+ 1 2]]]]',
 		'[[if false [stdout [+ 1 [- 1 2.0]]]]]',
@@ -426,9 +464,6 @@ def test_generator():
 		'[[if true [if false false] [if true true]]]',
 		'[[if true true] [if false false]]',
 		'[[if true [stdout "true"]] [if false [stdout "false"]]]',
-
-		'[[:= x 2][stdout[+ 7 x]]]', # should this fail?
-
 		'[[:= under_score5x 2][stdout[+ 7 under_score5x]]]',
 		'[[let [[x int]]] [:= x 10] [stdout x]]',
 		'[[let [[y real]]] [:= y 1.0] [stdout y]]',
@@ -443,10 +478,42 @@ def test_generator():
 		'[[ [let [[x real]]]  [:= x 1.1] [stdout x] ]]', 
 		'[[let [[y real][x int]] ]]'
 
-
 	]
-
-	test(ts2)
+	
+	# semantic error cases:
+	
+	ts_invalid_id = [
+		'[[let [[stdout int]]]]' 
+	]
+	
+	ts_wrong_type = [
+		'[[+ 3 "test"]]',
+		'[[+ [+ 1 "two"] "three"]]',
+		'[[* 1 "2"]]',
+		'[[sin "2"]]',
+		'[[let [[y string]]] [:= y "hi"][- 1 y]]'
+	]
+	
+	ts_wrong_assignment = [
+		'[[let [[y string]]] [:= y 23]]',
+		'[[let [[y int]]] [:= y "hello"]]',
+		'[[let [[y real]]] [:= y "hi"]]',
+		'[[let [[y int]]] [:= y "hi"] [stdout y]]',
+		
+	]
+	
+	ts_undefined_var = [
+		'[[stdout y]]',
+		'[[if true [stdout x]]]',
+		'[[+ 1 z]]',
+		'[[- w]]',
+		'[[:= x 2][stdout[+ 7 x]]]',
+		'[[:= w z]]',
+		'[[:= w "hello"]]'
+	]
+	
+	test(ts_wrong_assignment)
+	
 
 test_generator()
 
