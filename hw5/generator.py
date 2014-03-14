@@ -190,7 +190,7 @@ def generator2(x):
 							else:
 								if (symbol_table[i[1]] == 'real'):
 									ret += i[1] + ' f@ ' 
-								elif (symbol_table[i[1]] in ['int','string']):
+								elif (symbol_table[i[1]] in ['int','string']): 
 									ret += i[1] + ' @ '
 						
 									if (symbol_table[i[1]] == 'string' and list_x[k+1][1] in int_float_only_ops):
@@ -198,6 +198,10 @@ def generator2(x):
 																			 
 								else:
 									semantic_errors.append("\n\tUndefined variable: '" + i[1] + "' undeclared or referenced before assignment")
+									print_error_messages(semantic_errors)
+									return -1
+									#ret += i[1] + ' ' #not semantically correct... but whatev
+									
 
 				elif (setting_var == False and in_varlist != 0):
 					if i[0] == 'ID':
@@ -224,6 +228,10 @@ def generator2(x):
 							ret += i[1] + ' ! '
 						else:
 							semantic_errors.append("\n\tUndefined variable: '" + i[1] + "' undeclared or referenced before assignment")
+							print_error_messages(semantic_errors)
+							#ret += i[1] + ' ' #not semantically correct... but whatev
+							return -1
+
 				#end variable logic
 				
 				if i[0] == 'assignment_op':
@@ -390,13 +398,14 @@ def generator(x):
 def generate_gforth_script(x):
 	
 	parser_out = parser(x)
+
 	output = ""
 	#output = '\n' + chr(92) + ' input content: ' + str(x) + '\n' 
 	
 	if parser_out:	
 		parse_tree = parser_out[1]
 		
-		print_tree(parse_tree)
+		#print_tree(parse_tree)
 
 		type_errors = type_checker(parse_tree)
 	
@@ -406,9 +415,14 @@ def generate_gforth_script(x):
 		#output += chr(92) + ' -------------------------------' + '\n' 
 	
 		gforth_code = generator2(parse_tree)
-		#print gforth_code
-		output += str(gforth_code) + ' '
-		return output
+
+		if (gforth_code != -1):
+			#print gforth_code
+			output += str(gforth_code) + ' '
+			return output
+		else: 
+			output += 'Semantic error. Exiting.'
+			return output
 	else:
 		output += chr(92) + ' parsing failed on: ' + x
 		return output + '\n'
@@ -512,10 +526,10 @@ def test_generator():
 		'[[:= w "hello"]]'
 	]
 	
-	test(ts_wrong_assignment)
+	test(ts_undefined_var)
 	
 
-test_generator()
+#test_generator()
 
 '''
 VARIABLE x 0 x !
