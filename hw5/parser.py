@@ -49,7 +49,7 @@ def S(x):
 			new_node.add_child(ret[1])
 			return 'S->expr,' + ret[0], new_node
 
-def expr(x): 
+def expr(x):
 	ret = oper(x)
 	if ret != None:
 		new_node = Node("expr->oper")
@@ -89,8 +89,18 @@ def oper(x):
 					new_node.add_child(ret3[1])
 					return 'oper->[binops oper oper],' + ret1[0] + ret2[0] + ret3[0], new_node
 
-	if len(x) >= 4:
+	if len(x) >= 3:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+			# handles the weird special case of proftest4.in and splitting a negative
+			if x[1][0] in ['int_number','real_number']:
+				if x[2][0] == 'bracket-r':
+					if (x[1][1][0] == '-'):
+						new_node = Node("oper->[unops oper]")
+						new_node1 = Node(('minus-unop','-'))
+						new_node2 = Node((str(x[1][0]),str(x[1][1][1:])))
+						new_node.add_child(new_node1)
+						new_node.add_child(new_node2)
+						return ' ', new_node
 			ret1 = unops([x[1]])
 			ret2 = oper(x[2:-1]) # fixed problem case: '[[ sin [+ 1 2] ]]'
 			if (ret1 != None and ret2 != None):
@@ -121,8 +131,6 @@ def binops(x):
 		return 'binops->'+x[0][1]+',', new_node
 
 		
-		
-
 # disambiguates 'minus-sign'
 def unops(x):
 	if x[0][0] in ['trig_op','log_op']:
@@ -230,66 +238,47 @@ def printstmts(x):
 					return 'printstmts->[stdout oper],' + ret[0], new_node
 
 def ifstmts(x):
+
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			if (x[1][0] == 'keyword' and x[1][1] == 'if'):
+				
+				if (len(x) >= 6): #if then else
+					for i in range(3,len(x)):
+						for j in range(i,len(x)):
+							ret1 = expr(x[2:i]) 
+							ret2 = expr(x[i:j])
+							ret3 = expr(x[j:-1])
+							if (ret1 != None and ret2 != None and ret3 != None):
+								new_node = Node(('if_stmt','if_then_else'))
+								tmp_node = Node(('if_stmt','a'))
+								new_node.add_child(tmp_node)
+								new_node.add_child(ret3[1])
+								tmp_node = Node(('if_stmt','b'))
+								new_node.add_child(tmp_node)
+								new_node.add_child(ret2[1])
+								tmp_node = Node(('if_stmt','c'))
+								new_node.add_child(tmp_node)
+								new_node.add_child(ret1[1])
+								tmp_node = Node(('if_stmt','d'))
+								new_node.add_child(tmp_node)
+								return 'ifstmts->[if expr expr expr],' + ret1[0] + ret2[0] + ret3[0], new_node
 
-				if (len(x) >= 6):
-					ret1 = expr([x[2]])
-
-					for i in range(4,len(x)):
-						ret2 = expr(x[3:i])
-						ret3 = expr(x[i:-1])
-
-						if (ret1 != None and ret2 != None and ret3 != None):
-							new_node = Node(('if_stmt','if_then_else'))
-
-							tmp_node = Node(('if_stmt','a'))
+				if (len(x) >= 5): #if then
+					for i in range(3,len(x)):
+						ret1 = expr(x[2:i])
+						ret2 = expr(x[i:-1])
+						if (ret1 != None and ret2 != None):
+							new_node = Node(('if_stmt','if_then'))
+							tmp_node = Node(('if_stmt','e'))
 							new_node.add_child(tmp_node)
-
-							new_node.add_child(ret3[1])
-
-							tmp_node = Node(('if_stmt','b'))
-							new_node.add_child(tmp_node)
-
 							new_node.add_child(ret2[1])
-
-							tmp_node = Node(('if_stmt','c'))
+							tmp_node = Node(('if_stmt','f'))
 							new_node.add_child(tmp_node)
-
 							new_node.add_child(ret1[1])
-
-							tmp_node = Node(('if_stmt','d'))
+							tmp_node = Node(('if_stmt','g'))
 							new_node.add_child(tmp_node)
-
-							return 'ifstmts->[if expr expr expr],' + ret1[0] + ret2[0] + ret3[0], new_node
-
-				if (len(x) >= 5):
-
-					ret1 = expr([x[2]])
-
-					if len(x[3:-1])>1: # further recursion
-						ret2 = expr(x[3:-1])
-					else:
-						ret2 = expr([x[3]])
-
-					if (ret1 != None and ret2 != None):
-						new_node = Node(('if_stmt','if_then'))
-
-						tmp_node = Node(('if_stmt','e'))
-						new_node.add_child(tmp_node)
-
-						new_node.add_child(ret2[1])
-
-						tmp_node = Node(('if_stmt','f'))
-						new_node.add_child(tmp_node)
-
-						new_node.add_child(ret1[1])
-
-						tmp_node = Node(('if_stmt','g'))
-						new_node.add_child(tmp_node)
-
-						return 'ifstmts->[if expr expr],' + ret1[0] + ret2[0], new_node
+							return 'ifstmts->[if expr expr],' + ret1[0] + ret2[0], new_node
 
 def whilestmts(x):
 	if len(x) >= 5:

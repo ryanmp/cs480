@@ -6,20 +6,7 @@
       1200e-6
       1
     ]
-    [
-      stdout
-      [
-        sin
-        -.5236
-      ]
-    ]
-    [
-      stdout
-      [
-        or
-        true
-        false
-      ]
-    ]
+    [ stdout 1 ]
+    [ stdout [- 2 3] ]
   ]
 ]

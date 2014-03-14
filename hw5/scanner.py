@@ -246,8 +246,8 @@ def CharType(x):
 		return 'bracket-l' # [
 	if ord(x) in [93]:
 		return 'bracket-r' # ]
-	if ord(x) in [10,32,13]:
-		return 'skippable' # space and newline
+	if ord(x) in [10,32,13,9]: # what is 13?? \r ... hm...
+		return 'skippable' # space and newline and tabs
 	if ord(x) == 95:
 		return 'underscore'
 	if ord(x) == 58:

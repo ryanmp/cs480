@@ -119,20 +119,16 @@ def generator2(x):
 				if i[0] == 'if_stmt' and i[1] in ['if_then','if_then_else']:
 					f_idx += 1
 					if nestedIf == False:
-						ret +=  ': foo'+ str(f_idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals
-						
+						ret +=  ': foo'+ str(f_idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals	
 					nestedIf = True
 					m += 1
-				
 				if i[0] == 'if_stmt' and i[1] in ['e','a']:
 					m -= 1
-					
 					if m <= 0:
 						nestedIf = False
 						ret +=  'endif ; foo'+ str(f_idx)+' '	
 					else:
 						ret += 'endif '
-					
 				if i[0] == 'if_stmt' and i[1] in ['f', 'c']:
 					ret +=  'if '
 				if i[0] == 'if_stmt' and i[1] in ['b']:
@@ -141,7 +137,11 @@ def generator2(x):
 				if i[0] == 'int_number':
 					ret += i[1] + ' '
 					if foundRealConst == True:
-						ret += 's>f '				
+						ret += 's>f '	
+					if (k > 0):
+						if list_x[k+1][1] == 'stdout':
+							ret += getgForthPrintOp(foundStrConst,foundRealConst)
+							
 
 				if i[0] == 'minus-unop':
 					if foundRealConst == True:
@@ -177,6 +177,7 @@ def generator2(x):
 					if i[0] == 'ID':
 
 						if ( len(list_x) > k+1 ): # to avoid error
+
 							if (list_x[k+1][1] == "stdout"):
 
 								print_eval = getPrintVar(i[1])
@@ -296,6 +297,9 @@ def print_error_messages(error_list):
 		print item
 
 def isIntStackOp(x):
+
+	print x
+
 	intStackOps = ['<','>','>=','<=','+','*','/','<>','negate','-']
 	
 	if x in intStackOps:
@@ -309,6 +313,7 @@ def convertToStackFloat(x):
 	return ret 
 
 def isPrintOp(x):
+
 	y = []
 	for i in x:
 		if (type(i) == tuple):
@@ -323,6 +328,7 @@ def isPrintOp(x):
 
 
 def getIdAndType(list_x, k):
+
 	var_def = ()
 	valid_types = ['real','int','string']
 	
@@ -338,6 +344,7 @@ def getIdAndType(list_x, k):
 
 # determine proper print op for a given id in a symbol table or variable definitions list
 def getPrintVar(id):
+
 	tmp_type = symbol_table[id]
 	if tmp_type == 'int':
 		print_eval = getgForthPrintOp(False, False)
@@ -421,7 +428,6 @@ def generate_gforth_script(x):
 			output += str(gforth_code) + ' '
 			return output
 		else: 
-			output += 'Semantic error. Exiting.'
 			return output
 	else:
 		output += chr(92) + ' parsing failed on: ' + x
@@ -454,6 +460,8 @@ def test_generator():
 		'[[and true false]]',
 		'[[not true]]',
 		'[[^ 1e3 2e1]]',
+		'[[sin [- 1.1]]]',
+		'[[sin [-2.3]]]',
 		'[[sin 2][cos 1.2]]',
 		'[[ sin [+ 1 2] ]]',
 		'[[- 2]]',
@@ -479,8 +487,7 @@ def test_generator():
 		'[[if true [if false false] [if true true]]]',
 		'[[if true true] [if false false]]',
 		'[[if true [stdout "true"]] [if false [stdout "false"]]]',
-		'[[:= under_score5x 2][stdout[+ 7 under_score5x]]]',
-		'[[let [[x int]]] [:= x 10] [stdout x]]',
+		'[[let [[x_ int]]] [:= x_ 10] [stdout x_]]',
 		'[[let [[y real]]] [:= y 1.0] [stdout y]]',
 		'[[let [[z string]]] [:= z "hello world"] [stdout z]]',
 		'[[let [[y real][x int]] ]]'
@@ -520,11 +527,19 @@ def test_generator():
 	]
 	
 	ts2 = [
-		'[[sin [- 1.1]]]',
-		'[[sin [-2.3]]]'
+		#'[[ if [< 1 2] 1 ]] '
+		'[[+ 2 [-3] ]]',
+		#'[[-2 [-3] ]]',
+		'[[+ 2 [- 3] ]]',
+		'[[+ 2 [- 3 1] ]]'
 	]
 
-	test(ts2)
+	ts3 = [
+		'[[stdout [- 	1 2] ]]', # hm... why doesn't this one print?
+		'[[stdout [/ 1 	2] ]]'
+	]
+
+	test(ts3)
 	
 
 test_generator()
