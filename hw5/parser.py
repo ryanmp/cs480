@@ -24,6 +24,7 @@ def S(x):
 		if (x[0][0] == 'bracket-l' and x[1][0] == 'bracket-r'):
 			return 'S->[ ]', Node("S->[ ]")
 
+
 	if (len(x) >= 2):
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			ret = S(x[1:-1])
@@ -49,6 +50,7 @@ def S(x):
 			new_node.add_child(ret[1])
 			return 'S->expr,' + ret[0], new_node
 
+
 def expr(x): 
 	ret = oper(x)
 	if ret != None:
@@ -63,6 +65,7 @@ def expr(x):
 		return 'expr->stmts,' + ret[0], new_node
 
 def oper(x):
+
 	if len(x) >= 5:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 
@@ -89,8 +92,26 @@ def oper(x):
 					new_node.add_child(ret3[1])
 					return 'oper->[binops oper oper],' + ret1[0] + ret2[0] + ret3[0], new_node
 
-	if len(x) >= 4:
+	if len(x) >= 0:
+
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
+
+			if x[1][0] in ['int_number','real_number']:
+				if x[2][0] == 'bracket-r':
+
+					# hm... this should split into minus and int
+					# and return properly...
+					# why isn't it working?
+					if (x[1][1][0] == '-'):
+						print x
+						new_node = Node("oper->[unops oper]")
+						new_node1 = Node(('minus-unop','-'))
+						new_node2 = Node(('int_number','42'))
+						new_node.add_child(new_node1)
+						new_node.add_child(new_node2)
+
+						return ' ', new_node
+
 			ret1 = unops([x[1]])
 			ret2 = oper([x[2]])
 			if (ret1 != None and ret2 != None):

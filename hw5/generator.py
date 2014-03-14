@@ -455,15 +455,16 @@ def test_generator():
 	ts2 = [
 
 		#'[[ [let [[x real]] ]  [:= x 1.1] [stdout x] ]]' 
-		'[[ [let [[x real]]]  [:= x 1.1] [stdout x] ]]', 
-		'[[let [[y real][x int]] ]]'
+		#'[[ [let [[x real]]]  [:= x 1.1] [stdout x] ]]', 
+		#'[[let [[y real][x int]] ]]',
+		'[[ [sin [-1]] ]]'
 
 
 	]
 
 	test(ts2)
 
-#test_generator()
+test_generator()
 
 '''
 VARIABLE x 0 x !
