@@ -6,6 +6,7 @@ import string
 import os
 
 invalid_types = []
+var_definitions = {} #symbol table or list of ids with their types (id, type)
 
 def determine_invalid_type(node, parent):
 	result = ''
@@ -71,7 +72,7 @@ def generator2(x):
 	
 	list_x.reverse()
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op','whilestmts']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op','whilestmts','varlist','keyword']
 
 	direct_translations = {
 		#no changes
@@ -99,24 +100,26 @@ def generator2(x):
 		'stdout':''
 	}
 
-	idx = 0	# conditional anonymous function name indexer
+	f_idx = 0	# conditional anonymous function name indexer
 	k = -1 # index to keep track of the items in list_x and use it to evaluate stdout if found in next token
 	m = 0 # state to detect inner ifs
-	var_definitions = {} #symbol table or list of ids with their types (id, type)
-	setting_var = False #checking to see if var is being set or used
-
 	
-	for i in list_x:
+	setting_var = False #checking to see if var is being set
+	in_varlist = 0 #checking to see if var is being declared
+	
+	for idx, i in enumerate(list_x):
+
 		k += 1
 		
 		if (type(i) == tuple):
+
 			if i[0] in to_transform: #by type
 
 				#if then
 				if i[0] == 'if_stmt' and i[1] in ['if_then','if_then_else']:
-					idx += 1
+					f_idx += 1
 					if nestedIf == False:
-						ret +=  ': foo'+ str(idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals
+						ret +=  ': foo'+ str(f_idx)+' ' # the idx is so that we can have multiple foos that match for nested conditionals
 						
 					nestedIf = True
 					m += 1
@@ -126,10 +129,9 @@ def generator2(x):
 					
 					if m <= 0:
 						nestedIf = False
-						ret +=  'endif ; foo'+ str(idx)+' '	
+						ret +=  'endif ; foo'+ str(f_idx)+' '	
 					else:
 						ret += 'endif '
-						idx -= 1
 					
 				if i[0] == 'if_stmt' and i[1] in ['f', 'c']:
 					ret +=  'if '
@@ -170,40 +172,60 @@ def generator2(x):
 						if list_x[k+1][1] == 'stdout':
 							ret += getgForthPrintOp(foundStrConst,foundRealConst)
 				
-				if (setting_var == False):
+				# start variable logic
+				if (setting_var == False and in_varlist == False):
 					if i[0] == 'ID':
-						if (i[1] in var_definitions and list_x[k+1][1] == "stdout"):
-							print_eval = getPrintVar(var_definitions, i[1])
-							
-							if var_definitions[i[1]] == 'real':
-								ret += i[1] + ' f@ ' + print_eval + ' '
+
+						if ( len(list_x) > k+1 ): # to avoid error
+							if (list_x[k+1][1] == "stdout"):
+
+								print_eval = getPrintVar(i[1])
+								
+								if (symbol_table[i[1]] == 'real'):
+									ret += i[1] + ' f@ ' + print_eval + ' '
+								elif (symbol_table[i[1]] in ['int','string']):
+									ret += i[1] + ' @ ' + print_eval + ' '
+		
 							else:
-								ret += i[1] + ' @ ' + print_eval + ' '
-	
-						elif (i[1] not in var_definitions):
-							ret += i[1] + ' @ '	
-						
-				else:
+								if (symbol_table[i[1]] == 'real'):
+									ret += i[1] + ' f@ ' 
+								elif (symbol_table[i[1]] in ['int','string']):
+									ret += i[1] + ' @ ' 
+
+				elif (setting_var == False and in_varlist != 0):
 					if i[0] == 'ID':
-						# is it type float?
-						# if so we have set the variable like this...
-						if (i[1] in var_definitions and var_definitions[i[1]] == 'real'):
-							ret += 'FVARIABLE'+' '+i[1]+' '+i[1] + ' f'
-						else:
-							ret += 'VARIABLE'+' '+i[1]+' '+i[1] + ' '
-						
+						symbol_table[i[1]] =  list_x[idx-1][1]
+						if list_x[idx-1][1] == 'real':		
+							ret += 'FVARIABLE ' + i[1] + ' '
+						elif list_x[idx-1][1] in ['int','string']:	
+							ret += 'VARIABLE ' + i[1] + ' '
+				elif (setting_var == True and in_varlist == 0):
+					if i[0] == 'ID':
+						if (symbol_table[i[1]] == 'real'):
+							ret += i[1] + ' f! '
+						elif (symbol_table[i[1]] in ['int','string']):
+							ret += i[1] + ' ! '
+				#end variable logic
+				
 				if i[0] == 'assignment_op':
 					if i[1] == 'start':
 						setting_var = True
 					if i[1] == 'end':
 						setting_var = False
-						ret += '! '
+						#ret += '! '
 
 				if i[0] == 'whilestmts':
 					if i[1] == 'start':
 						ret += ": loop1 BEGIN "
 					if i[1] == 'end':
 						ret += "UNTIL ; loop1 "
+
+				if i[0] == 'varlist':
+					if i[1] == 'start':
+						in_varlist += 1
+					if i[1] == 'end':
+						in_varlist -= 1
+
 	
 			elif i[1] in direct_translations: #by value
 				if (foundRealConst == True and isIntStackOp(i[1]) == True):
@@ -214,15 +236,6 @@ def generator2(x):
 				if (k > 0 and k < len(list_x)-1):
 					if list_x[k+1][1] == 'stdout':
 						ret += getgForthPrintOp(False,foundRealConst)
-			
-			elif i[0] in ['keyword']:
-				#detect let statements
-				if (k > 0):
-					if list_x[k+1][0] == 'ID':
-						var_def = getIdAndType(list_x, k)
-						if var_def:
-							var_definitions[var_def[0]] = var_def[1]
-						
 			else: 
 				print "error.. no gforth translation rule present for:",i," exiting..."
 				return -1
@@ -275,8 +288,8 @@ def getIdAndType(list_x, k):
 	return var_def
 
 # determine proper print op for a given id in a symbol table or variable definitions list
-def getPrintVar(var_list, id):
-	tmp_type = var_list[id]
+def getPrintVar(id):
+	tmp_type = symbol_table[id]
 	if tmp_type == 'int':
 		print_eval = getgForthPrintOp(False, False)
 	elif tmp_type == 'real':
@@ -414,16 +427,40 @@ def test_generator():
 		'[[if true true] [if false false]]',
 		'[[if true [stdout "true"]] [if false [stdout "false"]]]',
 
-		'[[:= x 2][stdout[+ 7 x]]]',
+		'[[:= x 2][stdout[+ 7 x]]]', # should this fail?
+
+		'[[:= under_score5x 2][stdout[+ 7 under_score5x]]]',
 		'[[let [[x int]]] [:= x 10] [stdout x]]',
 		'[[let [[y real]]] [:= y 1.0] [stdout y]]',
-		'[[let [[z string]]] [:= z "hello world"] [stdout z]]',
-		'[ [:= x 5] [while [< x 1][stdout "."][:= x [+ x 1]] ]]'
+		'[[let [[z string]]] [:= z "hello world"] [stdout z]]'
+		#'[ [:= x 5] [while [< x 1][stdout "."][:= x [+ x 1]] ]]'
 	]
 
-	test(ts)
+	# let's test varlist next...
+	ts2 = [
+
+		#'[[ [let [[x real]] ]  [:= x 1.1] [stdout x] ]]' 
+		'[[ [let [[x real]]]  [:= x 1.1] [stdout x] ]]', 
+		'[[let [[y real][x int]] ]]'
+
+
+	]
+
+	test(ts2)
 
 test_generator()
+
+'''
+VARIABLE x 0 x !
+
+: loop1 BEGIN 
+1 x @ + x ! 
+x @ 5 > 
+UNTIL ; loop1
+x @ .
+
+bye
+'''
 
 	
 

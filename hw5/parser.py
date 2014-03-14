@@ -332,7 +332,7 @@ def letstmts(x):
 				if (x[2][0] == 'bracket-l' and x[-2][0] == 'bracket-r'):
 					ret1 = varlist(x[3:-2])
 					if (ret1 != None):
-						new_node = Node("letstmts->[let [varlist]]")
+						new_node = Node('')
 						new_node.add_child(ret1[1])
 						return 'letstmts->[let [varlist]],' + ret1[0], new_node
 
@@ -343,7 +343,12 @@ def varlist(x):
 				ret1 = name([x[1]])
 				ret2 = _type([x[2]])
 				if (ret1 != None and ret2 != None):
-					new_node = Node("varlist->[name type]")
+					#new_node = Node(('new_var',[x[1],x[2]]))
+
+					new_node = Node(('varlist','start'))
+					start_node = Node(('varlist','end'))
+					new_node.add_child(start_node)
+
 					new_node.add_child(ret1[1])
 					new_node.add_child(ret2[1])
 					return 'varlist->[name type],' + ret1[0] + ret2[0], new_node
@@ -353,7 +358,9 @@ def varlist(x):
 				ret2 = _type([x[2]])
 				ret3 = varlist(x[4:])
 				if (ret1 != None and ret2 != None and ret3 != None):
-					new_node = Node("varlist->[name type] varlist")
+					new_node = Node(('varlist','start'))
+					start_node = Node(('varlist','end'))
+					new_node.add_child(start_node)
 					new_node.add_child(ret1[1])
 					new_node.add_child(ret2[1])
 					new_node.add_child(ret3[1])
@@ -363,6 +370,7 @@ def _type(x):
 	if x[0][0] == 'keyword':
 		if x[0][1] in ['bool','int','real', 'string']:
 			new_node = Node(x[0])
+			#new_node = Node('')
 			return 'type->'+x[0][1]+',',new_node
 
 '''
