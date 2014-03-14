@@ -17,16 +17,6 @@ trig_operators = ['sin','cos','tan']
 
 # an entry is added for each new ID (new Var)
 symbol_table = {}
-	
-# calls scanner function for each line in file named 'x'
-def scan_file(x):
-	file_output = []
-	f = open(x)
-	lines_raw = f.readlines()
-	for i in range(0,len(lines_raw)):
-		file_output.append(scanner(lines_raw[i]))
-
-	return file_output
 
  # x: input string
  # on return:
