@@ -92,7 +92,7 @@ def oper(x):
 	if len(x) >= 4:
 		if (x[0][0] == 'bracket-l' and x[-1][0] == 'bracket-r'):
 			ret1 = unops([x[1]])
-			ret2 = oper([x[2]])
+			ret2 = oper(x[2:-1]) # fixed problem case: '[[ sin [+ 1 2] ]]'
 			if (ret1 != None and ret2 != None):
 				new_node = Node("oper->[unops oper]")
 				new_node.add_child(ret1[1])

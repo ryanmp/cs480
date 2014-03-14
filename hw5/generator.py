@@ -363,7 +363,7 @@ def getgForthPrintOp(isStrConst,isRealConst):
 def detectFloat(x):
 	for i in x:
 		if (type(i) == tuple):
-			if i[0] == 'real_number':
+			if i[0] in ['real_number', 'trig_op']: #added trig_op so that '[[sin 2]]' will pass
 				return True
 	return False
 
@@ -455,6 +455,7 @@ def test_generator():
 		'[[not true]]',
 		'[[^ 1e3 2e1]]',
 		'[[sin 2][cos 1.2]]',
+		'[[ sin [+ 1 2] ]]',
 		'[[- 2]]',
 		'[[* 1.2E-1 1.5e2]]',
 		'[[+ 2 1.0]]',
@@ -481,19 +482,11 @@ def test_generator():
 		'[[:= under_score5x 2][stdout[+ 7 under_score5x]]]',
 		'[[let [[x int]]] [:= x 10] [stdout x]]',
 		'[[let [[y real]]] [:= y 1.0] [stdout y]]',
-		'[[let [[z string]]] [:= z "hello world"] [stdout z]]'
+		'[[let [[z string]]] [:= z "hello world"] [stdout z]]',
+		'[[let [[y real][x int]] ]]'
 		#'[ [:= x 5] [while [< x 1][stdout "."][:= x [+ x 1]] ]]'
 	]
 
-	# let's test varlist next...
-	ts2 = [
-
-		#'[[ [let [[x real]] ]  [:= x 1.1] [stdout x] ]]' 
-		'[[ [let [[x real]]]  [:= x 1.1] [stdout x] ]]', 
-		'[[let [[y real][x int]] ]]'
-
-	]
-	
 	# semantic error cases:
 	
 	ts_invalid_id = [
@@ -526,10 +519,15 @@ def test_generator():
 		'[[:= w "hello"]]'
 	]
 	
-	test(ts_undefined_var)
+	ts2 = [
+		'[[sin [- 1.1]]]',
+		'[[sin [-2.3]]]'
+	]
+
+	test(ts2)
 	
 
-#test_generator()
+test_generator()
 
 '''
 VARIABLE x 0 x !
