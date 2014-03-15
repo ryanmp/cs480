@@ -16,9 +16,7 @@
     [
       stdout
       [
-        or
-        true
-        false
+        + 1 1
       ]
     ]
   ]

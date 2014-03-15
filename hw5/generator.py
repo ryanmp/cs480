@@ -227,6 +227,9 @@ def generator2(x):
 						type_id_in_symbol_table = symbol_table[i[1]] 
 						type_id_in_assignment_op = list_x[k-1][0]
 						 
+						print symbol_table
+						print list_x[k-1][0]
+
 						if is_assignment_invalid(type_id_in_symbol_table, type_id_in_assignment_op) == True:
 							semantic_errors.append("\n\ttype error: '" + i[1] + "' assignment of the wrong type")
 							
@@ -292,6 +295,7 @@ def generator2(x):
 	return ret
 
 def is_assignment_invalid(type1, type2):
+
 	if type1 == "real_number":
 		type1 = "real"
 	if type2 == "real_number":
@@ -301,7 +305,9 @@ def is_assignment_invalid(type1, type2):
 	if type2 == "int_number":
 		type2 = "int"
 	
-	if type1 != type2:
+	if type1 == 'minus-unop' or type2 == 'minus-unop':
+		return False
+	elif type1 != type2:
 		return True
 	else:
 		return False
@@ -522,8 +528,7 @@ def test_generator():
 		'[[let [[y string]]] [:= y 23]]',
 		'[[let [[y int]]] [:= y "hello"]]',
 		'[[let [[y real]]] [:= y "hi"]]',
-		'[[let [[y int]]] [:= y "hi"] [stdout y]]',
-		
+		'[[let [[y int]]] [:= y "hi"] [stdout y]]',	
 	]
 	
 	ts_undefined_var = [
@@ -541,22 +546,22 @@ def test_generator():
 		'[[+ 2 [-3] ]]',
 		#'[[-2 [-3] ]]', #uh oh
 		'[[+ 2 [- 3] ]]',
-		'[[+ 2 [- 3 1] ]]'
+		'[[+ 2 [- 3 1] ]]',
+		'[[stdout [- 1 2] ]]',
+		'[[stdout [- 1] ]]',
+		'[[stdout [/ 1 \n 	2 \n] ]]',
+		'[[ [+ 1.0 2][stdout [ or true false]] ]]',
+  	 	'[  [let [[x int]]]  [:= x [-1]]  ]' 
 	]
 
 	ts3 = [
-		'[[stdout [- 1 2] ]]', # hm... why doesn't this one print?
-		'[[stdout [- 1] ]]',
-		#'[[stdout [/ 1 \n 	2 \n] ]]',
-		#'[[+ 1 2]]',
-		'[[ [+ 1.0 2][stdout [ or true false]] ]]' # the stdout shouldn't use float method
-      
+		 '[  [let [[x int]]]  [:= x [-1]]  ]'  
 	]
 
 	test(ts3)
 	
 
-test_generator()
+#test_generator()
 
 '''
 VARIABLE x 0 x !

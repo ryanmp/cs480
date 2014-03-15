@@ -1,0 +1,1 @@
+[[let [[z string]]] [:= z "hello world"] [stdout z]]
