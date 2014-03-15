@@ -229,7 +229,13 @@ def printstmts(x):
 					#new_node = Node("printstmts->[stdout oper]")
 					#new_node.add_child(ret[1])
 					
-					new_node = Node("printstmts->[stdout oper]")
+					#new_node = Node("printstmts->[stdout oper]")
+					
+					new_node = Node(('printstmts','start'))
+					start_node = Node(('printstmts','end'))
+					new_node.add_child(start_node)
+					
+					
 					new_node_token = Node(x[1])
 					
 					new_node.add_child(new_node_token)

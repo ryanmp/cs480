@@ -63,10 +63,11 @@ def generator2(x):
 		
 	isPrintStmt = isPrintOp(list_x)
 	foundRealConst = detectFloat(list_x)
+	stdout_float = False 
 	
 	list_x.reverse()
 
-	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op','whilestmts','varlist','keyword']
+	to_transform = ['real_number','int_number','minus-binop','minus-unop','string','if_stmt','ID','assignment_op','whilestmts','varlist','keyword','printstmts']
 
 	direct_translations = {
 		#no changes
@@ -103,6 +104,7 @@ def generator2(x):
 	
 	setting_var = False #checking to see if var is being set
 	in_varlist = 0 #checking to see if var is being declared
+	stdout_flag = False # checking to see when a stdout is being used
 	
 	for idx, i in enumerate(list_x):
 
@@ -240,6 +242,13 @@ def generator2(x):
 
 				#end variable logic
 				
+				if i[0] == 'printstmts':
+					if i[1] == 'start':
+						stdout_flag = True
+						foundRealConst = False # reset initial check to find real const
+					if i[1] == 'end':
+						stdout_flag = False
+				
 				if i[0] == 'assignment_op':
 					if i[1] == 'start':
 						setting_var = True
@@ -258,7 +267,7 @@ def generator2(x):
 						in_varlist += 1
 					if i[1] == 'end':
 						in_varlist -= 1
-
+				
 	
 			elif i[1] in direct_translations: #by value
 				if (foundRealConst == True and isIntStackOp(i[1]) == True):
@@ -274,8 +283,8 @@ def generator2(x):
 				return -1
 
 	
-	if isPrintStmt == True:
-		ret += getgForthPrintOp(foundStrConst,foundRealConst)
+	#if isPrintStmt == True:
+	#	ret += getgForthPrintOp(foundStrConst,foundRealConst)
 	
 	if len(semantic_errors) > 0:
 		print_error_messages(semantic_errors)
@@ -539,7 +548,7 @@ def test_generator():
 		'[[stdout [- 1 2] ]]', # hm... why doesn't this one print?
 		'[[stdout [- 1] ]]',
 		#'[[stdout [/ 1 \n 	2 \n] ]]',
-		'[[+ 1 2]]',
+		#'[[+ 1 2]]',
 		'[[ [+ 1.0 2][stdout [ or true false]] ]]' # the stdout shouldn't use float method
       
 	]
