@@ -145,12 +145,20 @@ def generator2(x):
 						ret += 'fnegate' + ' '
 					else:
 						ret += 'negate' + ' '
+					if ( len(list_x) > k+1 ):
+						if list_x[k+1][1] == 'stdout':
+							ret += getgForthPrintOp(foundStrConst,foundRealConst)
+					
 
 				if i[0] == 'minus-binop':
 					if foundRealConst == True:
 						ret += 'f-' + ' '
 					else:
 						ret += '-' + ' '
+					if ( len(list_x) > k+1 ):
+						if list_x[k+1][1] == 'stdout':
+							ret += getgForthPrintOp(foundStrConst,foundRealConst)
+					
 
 				if i[0] == 'real_number':
 					foundRealConst = True
@@ -529,6 +537,7 @@ def test_generator():
 
 	ts3 = [
 		'[[stdout [- 1 2] ]]', # hm... why doesn't this one print?
+		'[[stdout [- 1] ]]',
 		#'[[stdout [/ 1 \n 	2 \n] ]]',
 		'[[+ 1 2]]',
 		'[[ [+ 1.0 2][stdout [ or true false]] ]]' # the stdout shouldn't use float method
