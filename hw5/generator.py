@@ -60,10 +60,7 @@ def generator2(x):
 	
 	foundStrConst = False
 	foundRealConst = False
-	
-	#print list_x
-	
-	
+		
 	isPrintStmt = isPrintOp(list_x)
 	foundRealConst = detectFloat(list_x)
 	
@@ -297,11 +294,7 @@ def print_error_messages(error_list):
 		print item
 
 def isIntStackOp(x):
-
-	print x
-
 	intStackOps = ['<','>','>=','<=','+','*','/','<>','negate','-']
-	
 	if x in intStackOps:
 		return True
 	else:
@@ -527,16 +520,19 @@ def test_generator():
 	]
 	
 	ts2 = [
-		#'[[ if [< 1 2] 1 ]] '
+		'[[ if [< 1 2] 1 ]] ',
 		'[[+ 2 [-3] ]]',
-		#'[[-2 [-3] ]]',
+		#'[[-2 [-3] ]]', #uh oh
 		'[[+ 2 [- 3] ]]',
 		'[[+ 2 [- 3 1] ]]'
 	]
 
 	ts3 = [
-		'[[stdout [- 	1 2] ]]', # hm... why doesn't this one print?
-		'[[stdout [/ 1 	2] ]]'
+		'[[stdout [- 1 2] ]]', # hm... why doesn't this one print?
+		#'[[stdout [/ 1 \n 	2 \n] ]]',
+		'[[+ 1 2]]',
+		'[[ [+ 1.0 2][stdout [ or true false]] ]]' # the stdout shouldn't use float method
+      
 	]
 
 	test(ts3)

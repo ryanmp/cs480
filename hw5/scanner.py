@@ -196,20 +196,20 @@ def scanner(x):
 				if (isSigned):
 					if len(tempVal) > 1: # has to be longer than just a minus sign
 
-						if (isReal == 0): output.append(('int_number',tempVal))
-						elif (isExpSigned == 1): output.append(('real_number',tempVal))
+						if (isExpSigned == 1): output.append(('real_number',tempVal))
 						elif (isExp == 1): output.append(('real_number', tempVal))
 						elif (isReal == 1): output.append(('real_number',tempVal))
+						elif (isReal == 0): output.append(('int_number',tempVal))
 
 					else:
 						i -= 1
 
 				else: #non signed nums
 
-					if (isReal == 0): output.append(('int_number',tempVal))
-					elif (isExpSigned == 1): output.append(('real_number',tempVal))
+					if (isExpSigned == 1): output.append(('real_number',tempVal))
 					elif (isExp == 1): output.append(('real_number', tempVal))
 					elif (isReal == 1): output.append(('real_number',tempVal))
+					elif (isReal == 0): output.append(('int_number',tempVal))
 					
 		
 		#arithmatic op
